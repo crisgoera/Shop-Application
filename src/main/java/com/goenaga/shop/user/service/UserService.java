@@ -5,16 +5,10 @@ import com.goenaga.shop.user.enums.Role;
 import com.goenaga.shop.user.model.User;
 import com.goenaga.shop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
-
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -25,7 +19,7 @@ public class UserService {
 
     public User createNewUser(SignupRequest request) {
         Optional<User> user = userRepository.findUserByEmail(request.getEmail());
-        if (user != null) throw new UsernameNotFoundException("Already existing user");
+        if (!user.isEmpty()) throw new UsernameNotFoundException("Already existing user");
 
 //        Save new user in DB
         Date timestamp = new Date();
