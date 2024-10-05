@@ -5,24 +5,15 @@ import com.goenaga.shop.auth.model.AuthResponse;
 import com.goenaga.shop.auth.model.LoginRequest;
 import com.goenaga.shop.auth.model.SignupRequest;
 import com.goenaga.shop.security.service.JWTService;
-import com.goenaga.shop.user.enums.Role;
 import com.goenaga.shop.user.model.User;
-import com.goenaga.shop.user.repository.UserRepository;
 import com.goenaga.shop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
 
 
 @Service
@@ -30,7 +21,6 @@ import java.util.UUID;
 public class AuthService {
     private final UserService userService;
     private final JWTService jwtService;
-    private final AuthenticationManager authenticationManager;
 
     public AuthResponse signUp(SignupRequest request) {
         User newUser = userService.createNewUser(request);
@@ -45,13 +35,14 @@ public class AuthService {
 
     public ResponseEntity login(LoginRequest request) {
         try {
-            String email = request.getEmail();
-            User user = User.builder().email(email).build();
-            Authentication auth = authenticationManager.authenticate(
-                    new UsernamePasswordAuthenticationToken(email, request.getPassword())
-            );
+            User user = userService.findUserByEmail(request.getEmail()).get();
+            String saltedPassword = user.getPassword();
 
-            return ResponseEntity.ok(AuthResponse.builder().email(email).token(jwtService.createToken(user)).build());
+            if (!validateLoginCredentials(request.getPassword(), saltedPassword)) {
+                throw new BadCredentialsException("Invalid username or password");
+            }
+
+            return ResponseEntity.ok(AuthResponse.builder().email(request.getEmail()).token(jwtService.createToken(user)).build());
 
         } catch (BadCredentialsException e){
             ErrorResponse error = ErrorResponse.builder()
@@ -60,5 +51,9 @@ public class AuthService {
                     .build();
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
         }
+    }
+
+    private boolean validateLoginCredentials(String plainPassword, String saltedPassword) {
+        return new BCryptPasswordEncoder().matches(plainPassword, saltedPassword);
     }
 }
