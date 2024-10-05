@@ -22,7 +22,7 @@ import java.util.UUID;
 @Builder
 @Getter
 @Document("users")
-public class User implements UserDetails{
+public class User implements UserDetails {
     @Id
     private final UUID id;
     @Indexed (unique = true)
