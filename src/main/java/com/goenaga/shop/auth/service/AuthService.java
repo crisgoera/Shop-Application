@@ -34,23 +34,18 @@ public class AuthService {
     }
 
     public ResponseEntity login(LoginRequest request) {
-        try {
             User user = userService.findUserByEmail(request.getEmail()).get();
             String saltedPassword = user.getPassword();
 
             if (!validateLoginCredentials(request.getPassword(), saltedPassword)) {
-                throw new BadCredentialsException("Invalid username or password");
+                ErrorResponse error = ErrorResponse.builder()
+                        .status(HttpStatus.UNAUTHORIZED)
+                        .message("Invalid username or password")
+                        .build();
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
             }
 
             return ResponseEntity.ok(AuthResponse.builder().email(request.getEmail()).token(jwtService.createToken(user)).build());
-
-        } catch (BadCredentialsException e){
-            ErrorResponse error = ErrorResponse.builder()
-                    .status(HttpStatus.BAD_REQUEST)
-                    .message("Invalid username or password")
-                    .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(error);
-        }
     }
 
     private boolean validateLoginCredentials(String plainPassword, String saltedPassword) {
