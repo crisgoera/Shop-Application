@@ -18,12 +18,12 @@ public class AuthController {
     private final AuthService authService;
 
     @PostMapping ("/signup")
-    public ResponseEntity<AuthResponse> signUp(@RequestBody SignupRequest signupRequest) {
-        return ResponseEntity.ok(authService.signUp(signupRequest));
+    public ResponseEntity signUp(@RequestBody SignupRequest signupRequest) {
+        return authService.signUp(signupRequest);
     }
 
     @PostMapping ("/login")
-    public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request ) {
+    public ResponseEntity login(@RequestBody LoginRequest request ) {
         return authService.login(request);
     }
 }

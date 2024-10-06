@@ -5,10 +5,9 @@ import com.goenaga.shop.user.enums.Role;
 import com.goenaga.shop.user.model.User;
 import com.goenaga.shop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
+
 
 import java.util.Date;
 import java.util.Optional;
@@ -19,9 +18,9 @@ import java.util.UUID;
 public class UserService {
     private final UserRepository userRepository;
 
-    public User createNewUser(SignupRequest request) {
+    public Optional<User> createNewUser(SignupRequest request) {
         Optional<User> user = userRepository.findUserByEmail(request.getEmail());
-        if (!user.isPresent()) throw new ResponseStatusException(HttpStatus.NOT_ACCEPTABLE, "Email already in use");
+        if (user.isPresent()) { return user.empty(); }
 
 //        Save new user in DB
         Date timestamp = new Date();
@@ -35,7 +34,7 @@ public class UserService {
                 .lastModified(timestamp)
                 .role(Role.USER)
                 .build();
-        return userRepository.save(newUser);
+        return Optional.of(userRepository.save(newUser));
     }
 
     public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
