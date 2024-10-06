@@ -22,15 +22,24 @@ public class AuthService {
     private final UserService userService;
     private final JWTService jwtService;
 
-    public AuthResponse signUp(SignupRequest request) {
-        User newUser = userService.createNewUser(request);
+    public ResponseEntity signUp(SignupRequest request) {
+        Optional<User> newUserOptional = userService.createNewUser(request);
+        if (newUserOptional.isEmpty()) {
+            ErrorResponse error = ErrorResponse.builder()
+                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
+                    .message("Email already in use")
+                    .build();
 
-//        Issue new JWT token
-        String jwtToken = jwtService.createToken(newUser);
-        return AuthResponse.builder()
+            return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
+        }
+
+        User newUser = newUserOptional.get();
+
+//        Issue new JWT token and return response
+        return ResponseEntity.ok(AuthResponse.builder()
                 .email(newUser.getEmail())
-                .token(jwtToken)
-                .build();
+                .token(jwtService.createToken(newUser))
+                .build());
     }
 
     public ResponseEntity login(LoginRequest request) {
@@ -43,7 +52,10 @@ public class AuthService {
             return unauthorizedResponse();
         }
 
-        return ResponseEntity.ok(AuthResponse.builder().email(request.getEmail()).token(jwtService.createToken(user)).build());
+        return ResponseEntity.ok(AuthResponse.builder()
+                .email(request.getEmail())
+                .token(jwtService.createToken(user))
+                .build());
     }
 
     private boolean validateLoginCredentials(String plainPassword, String saltedPassword) {
