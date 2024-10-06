@@ -10,10 +10,10 @@ import com.goenaga.shop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 
 
 @Service
@@ -34,21 +34,28 @@ public class AuthService {
     }
 
     public ResponseEntity login(LoginRequest request) {
-            User user = userService.findUserByEmail(request.getEmail()).get();
-            String saltedPassword = user.getPassword();
+        Optional<User> userOptional = userService.findUserByEmail(request.getEmail());
+        if (userOptional.isEmpty()) { return unauthorizedResponse(); }
 
-            if (!validateLoginCredentials(request.getPassword(), saltedPassword)) {
-                ErrorResponse error = ErrorResponse.builder()
-                        .status(HttpStatus.UNAUTHORIZED)
-                        .message("Invalid username or password")
-                        .build();
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
-            }
+        User user = userOptional.get();
 
-            return ResponseEntity.ok(AuthResponse.builder().email(request.getEmail()).token(jwtService.createToken(user)).build());
+        if (!validateLoginCredentials(request.getPassword(), user.getPassword())) {
+            return unauthorizedResponse();
+        }
+
+        return ResponseEntity.ok(AuthResponse.builder().email(request.getEmail()).token(jwtService.createToken(user)).build());
     }
 
     private boolean validateLoginCredentials(String plainPassword, String saltedPassword) {
         return new BCryptPasswordEncoder().matches(plainPassword, saltedPassword);
+    }
+
+    private ResponseEntity<ErrorResponse> unauthorizedResponse() {
+        ErrorResponse error = ErrorResponse.builder()
+                .status(HttpStatus.UNAUTHORIZED)
+                .message("Invalid username or password")
+                .build();
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(error);
     }
 }
