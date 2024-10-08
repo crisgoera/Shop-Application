@@ -3,10 +3,10 @@ package com.goenaga.shop.security.service;
 import com.goenaga.shop.security.model.TokenEntity;
 import com.goenaga.shop.security.repository.TokenRepository;
 import com.goenaga.shop.user.model.User;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
+import jakarta.servlet.ServletException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -16,6 +16,8 @@ import org.springframework.web.server.ResponseStatusException;
 import javax.crypto.SecretKey;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Objects;
+import java.util.Optional;
 
 
 @Service
@@ -25,6 +27,7 @@ public class JWTService {
     private String SECRET_KEY;
     private String TOKEN_HEADER = "Authorization";
     private String TOKEN_PREFIX = "Bearer ";
+    private int TOKEN_EXPIRATION = 1000*60; // Expiration time in ms;
     private final TokenRepository tokenRepository;
 
     public String createToken(User user) {
@@ -37,16 +40,24 @@ public class JWTService {
         return TOKEN_PREFIX + jwtToken;
     }
 
-    public String refreshToken(String token) {
-//        Authenticate token
-        String email = getClaims(token).getSubject();
+    public String refreshToken(String token) throws ServletException {
+//        Authenticate token and retrieve email
+        String email = parseClaims(token).getSubject();
+//        Check if expired token is in DB.
+        String lastIssuedToken = tokenRepository.findTokenByEmail(email).getToken();
 
-//        Delete previous tokens associated with user and issue new token
-        tokenRepository.deleteByEmail(email);
-        String newToken = issueToken(email);
-        tokenRepository.save(TokenEntity.builder().token(newToken).build());
+//        If provided expired token equals last issued token, issue a new token
+        if (Objects.equals(token, lastIssuedToken)) {
+            String newToken = issueToken(email);
+//            Delete previous token
+            tokenRepository.deleteByEmail(email);
+//            Save new token
+            tokenRepository.save(TokenEntity.builder().token(newToken).email(email).build());
 
-        return newToken;
+            return newToken;
+        } else {
+            throw new ServletException("Revoked access. Token no longer valid");
+        }
     }
 
 //    Retrieve secret key.
@@ -58,7 +69,7 @@ public class JWTService {
 //    Issue new token instance
     private String issueToken(String email) {
         Date timestamp = new Date();
-        Date expiration = new Date(timestamp.getTime() + 24*60*60*1000); // Timestamp + 24 hours
+        Date expiration = new Date(timestamp.getTime() + TOKEN_EXPIRATION);
 
         return  Jwts.builder()
                     .issuer("authService")
@@ -69,33 +80,34 @@ public class JWTService {
                     .compact();
     }
 
-//    Parse token and retrieve claims
-    public Claims getClaims(String jwtToken) {
+//    Parse, verify and retrieve claims
+    public Claims parseClaims(String jwtToken) {
         try {
             return Jwts.parser()
                     .verifyWith(getEncKey())
                     .build()
                     .parseSignedClaims(jwtToken)
                     .getPayload();
-        } catch (JwtException exception) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED);
+        } catch (ExpiredJwtException ex) {
+            // Return claims if they can be verified but token is expired
+            return ex.getClaims();
+        } catch (SignatureException se) {
+            // Throw exception if claims can't be verified
+            throw new SignatureException("JWT validity cannot be asserted");
         }
     }
 
-    public String getUsername(String token) {
-        return getClaims(token).getSubject();
+    public String getEmail(String token) {
+        return parseClaims(token).getSubject();
     }
 
-    public Date getExpiration(String token) {
-        return getClaims(token).getExpiration();
+    public boolean isTokenExpired(String token) {
+        return parseClaims(token).getExpiration().before(new Date());
     }
 
-    private boolean isTokenExpired(String token) {
-        return getExpiration(token).before(new Date());
-    }
+    public boolean validateToken(String token, UserDetails userDetails) {
+        final String tokenEmail = parseClaims(token).getSubject();
 
-    public Boolean validateToken(String token, UserDetails userDetails) {
-        final String tokenEmail = getUsername(token);
         return (tokenEmail.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

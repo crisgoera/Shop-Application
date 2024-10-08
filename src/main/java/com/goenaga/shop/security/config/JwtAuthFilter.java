@@ -3,6 +3,7 @@ package com.goenaga.shop.security.config;
 import com.goenaga.shop.security.service.JWTService;
 import com.goenaga.shop.user.model.User;
 import com.goenaga.shop.user.service.UserService;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -39,7 +40,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         // Check if the header starts with "Bearer "
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7); // Extract token
-            username = jwtService.getUsername(token); // Extract username from token
+            username = jwtService.getEmail(token); // Parse, validate and extract username from token
+
+//            If token expired, request a refresh token
+            if (jwtService.isTokenExpired(token)) {
+                token = jwtService.refreshToken(token);
+            }
         }
 
         // If the token is valid and no authentication is set in the context
