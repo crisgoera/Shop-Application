@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 @Getter
 public class TokenEntity {
     @NonNull
-    private final String token;
-    @NonNull
     private final String email;
+    @NonNull
+    private final String token;
 }

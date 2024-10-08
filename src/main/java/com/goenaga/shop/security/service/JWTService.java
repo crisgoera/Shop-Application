@@ -34,7 +34,7 @@ public class JWTService {
 //        Issue new token
         String jwtToken = issueToken(user.getEmail());
         tokenRepository.save(TokenEntity.builder().token(jwtToken).email(user.getEmail()).build());
-        return jwtToken;
+        return TOKEN_PREFIX + jwtToken;
     }
 
     public String refreshToken(String token) {
@@ -44,7 +44,7 @@ public class JWTService {
 //        Delete previous tokens associated with user and issue new token
         tokenRepository.deleteByEmail(email);
         String newToken = issueToken(email);
-        tokenRepository.save(TokenEntity.builder().token(newToken).email(email).build());
+        tokenRepository.save(TokenEntity.builder().token(newToken).build());
 
         return newToken;
     }
@@ -60,13 +60,13 @@ public class JWTService {
         Date timestamp = new Date();
         Date expiration = new Date(timestamp.getTime() + 24*60*60*1000); // Timestamp + 24 hours
 
-        return  TOKEN_PREFIX + Jwts.builder()
-                .issuer("authService")
-                .subject(email)
-                .issuedAt(timestamp)
-                .expiration(expiration)
-                .signWith(getEncKey())
-                .compact();
+        return  Jwts.builder()
+                    .issuer("authService")
+                    .subject(email)
+                    .issuedAt(timestamp)
+                    .expiration(expiration)
+                    .signWith(getEncKey())
+                    .compact();
     }
 
 //    Parse token and retrieve claims
