@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Date;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -42,5 +43,9 @@ public class UserService {
 
     public String encodePassword(String password) {
         return new BCryptPasswordEncoder().encode(password);
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 }
