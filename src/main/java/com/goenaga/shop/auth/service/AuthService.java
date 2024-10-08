@@ -37,7 +37,6 @@ public class AuthService {
 
 //        Issue new JWT token and return response
         return ResponseEntity.ok(AuthResponse.builder()
-                .email(newUser.getEmail())
                 .token(jwtService.createToken(newUser))
                 .build());
     }
@@ -53,7 +52,6 @@ public class AuthService {
         }
 
         return ResponseEntity.ok(AuthResponse.builder()
-                .email(request.getEmail())
                 .token(jwtService.createToken(user))
                 .build());
     }
