@@ -24,7 +24,7 @@ public class JWTService {
     private String SECRET_KEY;
     private String TOKEN_HEADER = "Authorization";
     private String TOKEN_PREFIX = "Bearer ";
-    private int TOKEN_EXPIRATION = 1000*60; // Expiration time in ms;
+    private int TOKEN_EXPIRATION = 1000*60*60; // Expiration time in ms;
     private final TokenRepository tokenRepository;
 
     public String createToken(User user) {
@@ -46,11 +46,8 @@ public class JWTService {
 //        If provided expired token equals last issued token, issue a new token
         if (Objects.equals(token, lastIssuedToken)) {
             String newToken = issueToken(email);
-//            Delete previous token
-            tokenRepository.deleteByEmail(email);
-//            Save new token
+//        Update DB entry with the new token
             tokenRepository.save(TokenEntity.builder().token(newToken).email(email).build());
-
             return newToken;
         } else {
             throw new ServletException("Revoked access. Token no longer valid");
