@@ -19,12 +19,17 @@ public class Product {
     private final int productId;
     @Indexed(unique = true)
     @NonNull
-    private final String name;
-    private final String description;
+    private String name;
+    private String description;
     @NonNull
-    private final float price;
-    private final List<String> imgUrls;
-    private final int stock;
-    private final boolean isAvailable;
-    private final int unitsSold;
+    private float price;
+    private List<String> imgUrls;
+    private int stock;
+    private boolean isAvailable;
+    private  int unitsSold;
+
+
+    public void setIsAvailable() {
+        this.isAvailable = stock > 0;
+    }
 }
