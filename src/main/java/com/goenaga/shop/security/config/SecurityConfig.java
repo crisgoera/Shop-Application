@@ -44,8 +44,8 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITELIST_URL).permitAll()
                         .requestMatchers(HttpMethod.GET, "api/v1/products/**").permitAll()
-                        .requestMatchers(antMatcher(HttpMethod.POST, "api/v1/products/new")).hasAuthority("ROLE_ADMIN")
-                        .requestMatchers(ADMIN_ALLOWED_URL).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(antMatcher(HttpMethod.POST, "api/v1/products/new")).hasAuthority("ADMIN")
+//                        .requestMatchers(ADMIN_ALLOWED_URL).hasAuthority("ROLE_ADMIN")
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(sess -> sess
