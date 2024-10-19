@@ -32,6 +32,11 @@ public class SecurityConfig {
     private String[] WHITELIST_URL = {
             "api/v1/auth/**",
     };
+
+    private String[] USER_READABLE_URL = {
+            "api/v1/products/**"
+    };
+
     private String[] ADMIN_ALLOWED_URL = {
             "api/v1/products/new"
     };
@@ -43,9 +48,8 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(WHITELIST_URL).permitAll()
-                        .requestMatchers(HttpMethod.GET, "api/v1/products/**").permitAll()
-                        .requestMatchers(antMatcher(HttpMethod.POST, "api/v1/products/new")).hasAuthority("ADMIN")
-//                        .requestMatchers(ADMIN_ALLOWED_URL).hasAuthority("ROLE_ADMIN")
+                        .requestMatchers(HttpMethod.GET, USER_READABLE_URL).permitAll()
+                        .requestMatchers(ADMIN_ALLOWED_URL).hasAuthority("ADMIN")
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(sess -> sess
