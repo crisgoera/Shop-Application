@@ -29,7 +29,7 @@ public class JWTService {
     private final TokenRepository tokenRepository;
 
     public String createToken(User user) {
-        //        Delete previous issued token to the user if it has one assigned
+//        Delete previous issued token to the user if it has one assigned
         if (tokenRepository.findTokenByEmail(user.getEmail()).isPresent()) {
             tokenRepository.deleteByEmail(user.getEmail());
         }

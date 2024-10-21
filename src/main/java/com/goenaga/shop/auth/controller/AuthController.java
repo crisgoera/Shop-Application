@@ -1,13 +1,10 @@
 package com.goenaga.shop.auth.controller;
 
-import com.goenaga.shop.auth.model.AuthResponse;
 import com.goenaga.shop.auth.model.LoginRequest;
 import com.goenaga.shop.auth.model.SignupRequest;
 import com.goenaga.shop.auth.service.AuthService;
-import com.goenaga.shop.security.service.JWTService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
 
 
