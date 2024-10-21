@@ -25,11 +25,5 @@ public class Product {
     private float price;
     private List<String> imgUrls;
     private int stock;
-    private boolean isAvailable;
     private  int unitsSold;
-
-
-    public void setIsAvailable() {
-        this.isAvailable = stock > 0;
-    }
 }
