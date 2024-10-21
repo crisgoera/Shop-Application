@@ -29,12 +29,13 @@ public class SecurityConfig {
     private final JwtAuthFilter authFilter;
     private final AuthenticationProvider authenticationProvider;
 
-    private String[] WHITELIST_URL = {
+    private String[] OPEN_URL = {
             "api/v1/auth/**",
+            "api/v1/products/**"
     };
 
     private String[] USER_READABLE_URL = {
-            "api/v1/products/**"
+            "api/v1/user/**"
     };
 
     private String[] ADMIN_ALLOWED_URL = {
@@ -47,9 +48,9 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(WHITELIST_URL).permitAll()
-                        .requestMatchers(HttpMethod.GET, USER_READABLE_URL).permitAll()
+                        .requestMatchers(HttpMethod.GET, USER_READABLE_URL).hasAuthority("USER")
                         .requestMatchers(ADMIN_ALLOWED_URL).hasAuthority("ADMIN")
+                        .requestMatchers(OPEN_URL).permitAll()
                         .anyRequest().authenticated() // Protect all other endpoints
                 )
                 .sessionManagement(sess -> sess
