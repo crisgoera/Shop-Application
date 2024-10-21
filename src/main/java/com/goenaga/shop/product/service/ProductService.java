@@ -20,6 +20,7 @@ public class ProductService {
                 .name(productRequest.getName())
                 .description(productRequest.getDescription())
                 .price(productRequest.getPrice())
+                .stock(productRequest.getStock())
                 .imgUrls(productRequest.getImgUrls())
                 .build();
         return productRepository.save(newProduct);
