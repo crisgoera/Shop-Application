@@ -1,14 +1,14 @@
 package com.goenaga.shop.product.controller;
 
 import com.goenaga.shop.auth.error.ErrorResponse;
+import com.goenaga.shop.product.model.NewProductDTO;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -21,7 +21,7 @@ public class ProductController {
     public ResponseEntity<List<Product>> getProducts() { return ResponseEntity.ok(productService.getProducts()); }
 
     @PostMapping("/new")
-    public ResponseEntity<Product> createProduct(@RequestBody Product productRequest) {
+    public ResponseEntity<Product> createProduct(@RequestBody NewProductDTO productRequest) throws IOException {
         return ResponseEntity.ok(productService.createNewProduct(productRequest));
     }
 
