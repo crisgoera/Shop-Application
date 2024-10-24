@@ -49,7 +49,6 @@ public class JWTService {
         Optional<TokenEntity> tokenInDB = tokenRepository.findTokenByEmail(email);
         if (tokenInDB.isPresent()) { lastIssuedToken = tokenInDB.get().getToken(); }
 
-
 //        If provided expired token equals last issued token, issue a new token
         if (Objects.equals(token, lastIssuedToken)) {
             String newToken = issueToken(email);

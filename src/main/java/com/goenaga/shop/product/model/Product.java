@@ -23,13 +23,6 @@ public class Product {
     private String description;
     @NonNull
     private float price;
-    private List<String> imgUrls;
+    private List<Photo> productImgs;
     private int stock;
-    private boolean isAvailable;
-    private  int unitsSold;
-
-
-    public void setIsAvailable() {
-        this.isAvailable = stock > 0;
-    }
 }
