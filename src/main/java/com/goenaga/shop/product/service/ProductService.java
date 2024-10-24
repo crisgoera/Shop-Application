@@ -24,6 +24,7 @@ public class ProductService {
                 .description(productRequest.getDescription())
                 .price(productRequest.getPrice())
                 .productImgs(photoService.addPhotos(productRequest.getImageTitles(), productRequest.getImages()))
+                .stock(productRequest.getStock())
                 .build();
         return productRepository.save(newProduct);
     }
