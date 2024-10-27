@@ -26,7 +26,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getProductById(@PathVariable int id) {
+    public ResponseEntity getProductById(@PathVariable String id) {
         if (productService.getProductById(id).isEmpty()) {
             ErrorResponse error = ErrorResponse.builder()
                     .status(HttpStatus.NOT_FOUND)
@@ -35,6 +35,11 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
         return ResponseEntity.ok(productService.getProductById(id));
+    }
+
+    @PatchMapping("/{id}/edit")
+    public ResponseEntity editProductDetails(@PathVariable String id, @RequestBody Product updateDetails) {
+        return ResponseEntity.ok(productService.updateProduct(id, updateDetails));
     }
 
 }
