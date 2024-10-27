@@ -12,19 +12,19 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PhotoService {
-    public List<Photo> addPhotos(String[] titles, MultipartFile[] files) throws IOException {
+    public List<Photo> processPhotos(String[] titles, MultipartFile[] files) throws IOException {
         if (titles == null) { return null; }
 
-        List<Photo> productImages = null;
+        List<Photo> productPhotos = null;
         for (int i=0; i < titles.length; i++) {
-            productImages.add(
+            productPhotos.add(
                     Photo.builder()
                             .title(titles[i])
                             .image(new Binary(BsonBinarySubType.BINARY, files[i].getBytes()))
                             .build()
             );
         }
-        return productImages;
+        return productPhotos;
     }
 
 }
