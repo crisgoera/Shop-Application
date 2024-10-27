@@ -16,13 +16,13 @@ import java.util.List;
 @Document("products")
 public class Product {
     @Id
-    private final int productId;
+    private final String productId;
     @Indexed(unique = true)
     @NonNull
     private String name;
     private String description;
     @NonNull
     private float price;
-    private List<Photo> productImgs;
+    private List<Photo> photos;
     private int stock;
 }
