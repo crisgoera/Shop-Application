@@ -8,6 +8,4 @@ import java.util.Optional;
 
 public interface ProductRepository extends MongoRepository<Product, String> {
 
-    @Query("{íd}: ?0")
-    Optional<Product> findProductById(int id);
 }
