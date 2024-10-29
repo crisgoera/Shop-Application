@@ -8,7 +8,7 @@ import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
-
+import java.util.Currency;
 import java.util.List;
 
 @Builder
@@ -25,6 +25,6 @@ public class Product {
     private String description;
     @NonNull
     private float price;
+    private Currency currency;
     private List<Photo> photos;
-    private int stock;
 }
