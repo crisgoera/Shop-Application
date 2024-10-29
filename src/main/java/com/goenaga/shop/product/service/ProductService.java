@@ -5,6 +5,8 @@ import com.goenaga.shop.product.model.NewProductDTO;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.Currency;
@@ -43,11 +45,9 @@ public class ProductService {
         return productRepository.save(updatedProduct);
     }
 
-    public void removeProduct(String id) {
-        Optional<Product> foundProduct = getProductById(id);
-        if (foundProduct.isPresent()) {
-            productRepository.delete(foundProduct.get());
-        }
+    public ResponseEntity removeProduct(Product product) {
+        productRepository.delete(product);
+        return new ResponseEntity(HttpStatus.OK);
     }
 
     private String productIdSequencer() {

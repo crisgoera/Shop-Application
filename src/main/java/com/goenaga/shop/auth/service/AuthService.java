@@ -1,6 +1,6 @@
 package com.goenaga.shop.auth.service;
 
-import com.goenaga.shop.auth.error.ErrorResponse;
+import com.goenaga.shop.error.ErrorResponse;
 import com.goenaga.shop.auth.model.AuthResponse;
 import com.goenaga.shop.auth.model.LoginRequest;
 import com.goenaga.shop.auth.model.SignupRequest;
@@ -26,7 +26,6 @@ public class AuthService {
         Optional<User> newUserOptional = userService.createNewUser(request);
         if (newUserOptional.isEmpty()) {
             ErrorResponse error = ErrorResponse.builder()
-                    .status(HttpStatus.UNPROCESSABLE_ENTITY)
                     .message("Email already in use")
                     .build();
 
@@ -62,7 +61,6 @@ public class AuthService {
 
     private ResponseEntity<ErrorResponse> unauthorizedResponse() {
         ErrorResponse error = ErrorResponse.builder()
-                .status(HttpStatus.UNAUTHORIZED)
                 .message("Invalid username or password")
                 .build();
 
