@@ -1,6 +1,6 @@
 package com.goenaga.shop.product.controller;
 
-import com.goenaga.shop.auth.error.ErrorResponse;
+import com.goenaga.shop.error.ErrorResponse;
 import com.goenaga.shop.product.model.NewProductDTO;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.service.ProductService;
@@ -30,7 +30,6 @@ public class ProductController {
     public ResponseEntity getProductById(@PathVariable String id) {
         if (productService.getProductById(id).isEmpty()) {
             ErrorResponse error = ErrorResponse.builder()
-                    .status(HttpStatus.NOT_FOUND)
                     .message("Resource not found")
                     .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -43,7 +42,6 @@ public class ProductController {
         Optional<Product> foundProduct = productService.getProductById(id);
         if (foundProduct.isEmpty()) {
             ErrorResponse error = ErrorResponse.builder()
-                    .status(HttpStatus.NOT_FOUND)
                     .message("Resource not found")
                     .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -52,7 +50,14 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public void removeProduct(@PathVariable String id) {
-        productService.removeProduct(id);
+    public ResponseEntity removeProduct(@PathVariable String id) {
+        Optional<Product> foundProduct = productService.getProductById(id);
+        if (foundProduct.isEmpty()) {
+            ErrorResponse error = ErrorResponse.builder()
+                    .message("Resource not found")
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        return productService.removeProduct(foundProduct.get());
     }
 }
