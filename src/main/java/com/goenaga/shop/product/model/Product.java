@@ -24,7 +24,7 @@ public class Product {
     private String name;
     private String description;
     @NonNull
-    private float price;
+    private double price;
     private Currency currency;
     private List<Photo> photos;
 }
