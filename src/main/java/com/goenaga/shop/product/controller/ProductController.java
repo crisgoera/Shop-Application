@@ -1,6 +1,6 @@
 package com.goenaga.shop.product.controller;
 
-import com.goenaga.shop.auth.error.ErrorResponse;
+import com.goenaga.shop.error.ErrorResponse;
 import com.goenaga.shop.product.model.NewProductDTO;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.service.ProductService;
@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -26,10 +27,9 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity getProductById(@PathVariable int id) {
+    public ResponseEntity getProductById(@PathVariable String id) {
         if (productService.getProductById(id).isEmpty()) {
             ErrorResponse error = ErrorResponse.builder()
-                    .status(HttpStatus.NOT_FOUND)
                     .message("Resource not found")
                     .build();
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
@@ -37,4 +37,27 @@ public class ProductController {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
+    @PatchMapping("/{id}/edit")
+    public ResponseEntity editProductDetails(@PathVariable String id, @RequestBody Product updateDetails) {
+        Optional<Product> foundProduct = productService.getProductById(id);
+        if (foundProduct.isEmpty()) {
+            ErrorResponse error = ErrorResponse.builder()
+                    .message("Resource not found")
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        return ResponseEntity.ok(productService.updateProduct(foundProduct.get(), updateDetails));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity removeProduct(@PathVariable String id) {
+        Optional<Product> foundProduct = productService.getProductById(id);
+        if (foundProduct.isEmpty()) {
+            ErrorResponse error = ErrorResponse.builder()
+                    .message("Resource not found")
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        return productService.removeProduct(foundProduct.get());
+    }
 }

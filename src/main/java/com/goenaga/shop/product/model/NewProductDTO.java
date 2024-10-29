@@ -5,6 +5,8 @@ import lombok.Getter;
 import lombok.NonNull;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.Currency;
+
 @Builder
 @Getter
 public class NewProductDTO {
@@ -12,7 +14,8 @@ public class NewProductDTO {
     private String name;
     private String description;
     @NonNull
-    private float price;
+    private double price;
+    private Currency currency;
     private int stock;
     private MultipartFile[] images;
     private String[] imageTitles;

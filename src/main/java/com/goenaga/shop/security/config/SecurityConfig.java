@@ -31,6 +31,7 @@ public class SecurityConfig {
 
     private String[] OPEN_URL = {
             "api/v1/auth/**",
+            "api/v1/products",
             "api/v1/products/**"
     };
 
