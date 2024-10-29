@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -39,7 +40,19 @@ public class ProductController {
 
     @PatchMapping("/{id}/edit")
     public ResponseEntity editProductDetails(@PathVariable String id, @RequestBody Product updateDetails) {
-        return ResponseEntity.ok(productService.updateProduct(id, updateDetails));
+        Optional<Product> foundProduct = productService.getProductById(id);
+        if (foundProduct.isEmpty()) {
+            ErrorResponse error = ErrorResponse.builder()
+                    .status(HttpStatus.NOT_FOUND)
+                    .message("Resource not found")
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        return ResponseEntity.ok(productService.updateProduct(foundProduct.get(), updateDetails));
     }
 
+    @DeleteMapping("/{id}")
+    public void removeProduct(@PathVariable String id) {
+        productService.removeProduct(id);
+    }
 }

@@ -7,6 +7,7 @@ import com.goenaga.shop.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 
@@ -25,7 +26,8 @@ public class ProductService {
                 .productId(productIdSequencer())
                 .name(productRequest.getName())
                 .description(productRequest.getDescription())
-                .price(productRequest.getPrice())
+                .price(roundPrice(productRequest.getPrice()))
+                .currency(Currency.getInstance("EUR"))
                 .photos(photoService.processPhotos(productRequest.getImageTitles(), productRequest.getImages()))
                 .build();
         return productRepository.save(newProduct);
@@ -35,18 +37,29 @@ public class ProductService {
         return productRepository.findById(id);
     }
 
-    public Product updateProduct(String id, Product updateDetails) {
-        Optional<Product> product = productRepository.findById(id);
-
-        if (product.isPresent()) {
-            Product updatedProduct = mapperService.updateProductDetails(product.get(), updateDetails);
-            return productRepository.save(updatedProduct);
-        }
-
-        return null;
+    public Product updateProduct(Product product, Product updateDetails) {
+        updateDetails.setPrice(roundPrice(updateDetails.getPrice()));
+        Product updatedProduct = mapperService.updateProductDetails(product, updateDetails);
+        return productRepository.save(updatedProduct);
     }
 
-    public String productIdSequencer() {
-        return String.valueOf(getProducts().size() + 1);
+    public void removeProduct(String id) {
+        Optional<Product> foundProduct = getProductById(id);
+        if (foundProduct.isPresent()) {
+            productRepository.delete(foundProduct.get());
+        }
+    }
+
+    private String productIdSequencer() {
+        try {
+            int lastIssuedId = Integer.parseInt(productRepository.findTopByOrderByProductIdDesc().getProductId());
+            return String.valueOf(lastIssuedId + 1);
+        } catch (NullPointerException nullPointer) {
+            return "1";
+        }
+    }
+
+    private double roundPrice(double price) {
+        return Math.round(price * 100.00)/100.00;
     }
 }
