@@ -5,8 +5,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goenaga.shop.product.model.Product;
 import org.springframework.stereotype.Service;
-
-import java.lang.reflect.TypeVariable;
 import java.util.Map;
 
 
