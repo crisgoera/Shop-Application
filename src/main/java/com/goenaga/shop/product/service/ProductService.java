@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.Currency;
 import java.util.List;
@@ -61,5 +62,10 @@ public class ProductService {
 
     private double roundPrice(double price) {
         return Math.round(price * 100.00)/100.00;
+    }
+
+    public Product addProductPhotos(Product product, String[] titles, MultipartFile[] files) throws IOException {
+        product.setPhotos(photoService.processPhotos(titles, files));
+        return productRepository.save(product);
     }
 }

@@ -6,8 +6,10 @@ import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
@@ -60,4 +62,22 @@ public class ProductController {
         }
         return productService.removeProduct(foundProduct.get());
     }
+
+//    TODO: Fix POSTMAN image upload on requests to test photo implementation
+    @PatchMapping(path = "{id}/addphotos", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+    public ResponseEntity addProductPhotos(@PathVariable String id, @RequestPart MultipartFile[] files,
+        @RequestPart String[] titles) throws IOException {
+        Optional<Product> foundProduct = productService.getProductById(id);
+        if (foundProduct.isEmpty()) {
+            ErrorResponse error = ErrorResponse.builder()
+                    .message("Resource not found")
+                    .build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+        }
+        Product updatedProduct = productService.addProductPhotos(foundProduct.get(), titles, files);
+
+        return ResponseEntity.ok(updatedProduct);
+    }
+
+//    TODO: Remove photos from product functionality
 }

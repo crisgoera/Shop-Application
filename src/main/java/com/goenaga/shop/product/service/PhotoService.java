@@ -16,7 +16,7 @@ public class PhotoService {
         if (titles == null) { return null; }
 
         List<Photo> productPhotos = null;
-        for (int i=0; i < titles.length; i++) {
+        for (int i=0; i < files.length; i++) {
             productPhotos.add(
                     Photo.builder()
                             .title(titles[i])
