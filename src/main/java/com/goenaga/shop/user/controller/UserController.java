@@ -1,10 +1,12 @@
 package com.goenaga.shop.user.controller;
 
-import com.goenaga.shop.user.model.User;
+import com.goenaga.shop.user.model.UserDTO;
 import com.goenaga.shop.user.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("api/v1/user")
@@ -12,8 +14,8 @@ import java.util.List;
 public class UserController {
     private final UserService userService;
 
-    @GetMapping
-    public List<User> getAllUsers() {
-        return userService.getAllUsers();
+    @GetMapping("/profile")
+    public ResponseEntity getUserProfile(@RequestHeader("Authorization") String authHeader) {
+        return ResponseEntity.ok(userService.getUserFromToken(authHeader.substring(7)));
     }
 }
