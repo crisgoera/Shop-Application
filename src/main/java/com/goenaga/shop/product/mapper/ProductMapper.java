@@ -1,15 +1,16 @@
-package com.goenaga.shop.product.mapper.service;
+package com.goenaga.shop.product.mapper;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.goenaga.shop.product.model.Product;
+import com.goenaga.shop.user.model.User;
 import org.springframework.stereotype.Service;
 import java.util.Map;
 
 
 @Service
-public class MapperService {
+public class ProductMapper {
     public Product updateProductDetails (Product product, Product updateDetails) {
         ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
 

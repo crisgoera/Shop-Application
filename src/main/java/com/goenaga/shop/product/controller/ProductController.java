@@ -1,6 +1,6 @@
 package com.goenaga.shop.product.controller;
 
-import com.goenaga.shop.error.ErrorResponse;
+import com.goenaga.shop.error.model.ErrorResponse;
 import com.goenaga.shop.product.model.NewProductDTO;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.service.ProductService;

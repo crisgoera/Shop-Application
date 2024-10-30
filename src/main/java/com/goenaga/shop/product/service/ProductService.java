@@ -1,6 +1,6 @@
 package com.goenaga.shop.product.service;
 
-import com.goenaga.shop.product.mapper.service.MapperService;
+import com.goenaga.shop.product.mapper.ProductMapper;
 import com.goenaga.shop.product.model.NewProductDTO;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.repository.ProductRepository;
@@ -20,7 +20,7 @@ import java.util.Optional;
 public class ProductService {
     private final ProductRepository productRepository;
     private final PhotoService photoService;
-    private final MapperService mapperService;
+    private final ProductMapper productMapper;
 
     public List<Product> getProducts() { return productRepository.findAll(); }
 
@@ -42,7 +42,7 @@ public class ProductService {
 
     public Product updateProduct(Product product, Product updateDetails) {
         updateDetails.setPrice(roundPrice(updateDetails.getPrice()));
-        Product updatedProduct = mapperService.updateProductDetails(product, updateDetails);
+        Product updatedProduct = productMapper.updateProductDetails(product, updateDetails);
         return productRepository.save(updatedProduct);
     }
 

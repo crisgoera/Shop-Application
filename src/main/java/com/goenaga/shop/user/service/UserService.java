@@ -1,14 +1,16 @@
 package com.goenaga.shop.user.service;
 
 import com.goenaga.shop.auth.model.SignupRequest;
+import com.goenaga.shop.security.service.JWTService;
 import com.goenaga.shop.user.enums.Role;
+import com.goenaga.shop.user.mapper.UserMapper;
 import com.goenaga.shop.user.model.User;
+import com.goenaga.shop.user.model.UserDTO;
 import com.goenaga.shop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -16,6 +18,8 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class UserService {
     private final UserRepository userRepository;
+    private final JWTService jwtService;
+    private final UserMapper userMapper;
 
     public Optional<User> createNewUser(SignupRequest request) {
         Optional<User> user = userRepository.findUserByEmail(request.getEmail());
@@ -36,14 +40,14 @@ public class UserService {
         return Optional.of(userRepository.save(newUser));
     }
 
-    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
+    public UserDTO getUserFromToken(String token) {
+        User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
+        return userMapper.mapUserToDTO(user);
+    }
 
+    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
 
     public String encodePassword(String password) {
         return new BCryptPasswordEncoder().encode(password);
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
     }
 }

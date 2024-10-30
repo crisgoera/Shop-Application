@@ -1,4 +1,4 @@
-package com.goenaga.shop.error;
+package com.goenaga.shop.error.model;
 
 import lombok.Builder;
 import lombok.Getter;

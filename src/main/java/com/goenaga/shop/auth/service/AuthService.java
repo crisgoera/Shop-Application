@@ -1,6 +1,6 @@
 package com.goenaga.shop.auth.service;
 
-import com.goenaga.shop.error.ErrorResponse;
+import com.goenaga.shop.error.model.ErrorResponse;
 import com.goenaga.shop.auth.model.AuthResponse;
 import com.goenaga.shop.auth.model.LoginRequest;
 import com.goenaga.shop.auth.model.SignupRequest;
