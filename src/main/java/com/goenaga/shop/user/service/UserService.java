@@ -21,6 +21,10 @@ public class UserService {
     private final JWTService jwtService;
     private final UserMapper userMapper;
 
+    public String encodePassword(String password) {
+        return new BCryptPasswordEncoder().encode(password);
+    }
+
     public Optional<User> createNewUser(SignupRequest request) {
         Optional<User> user = userRepository.findUserByEmail(request.getEmail());
         if (user.isPresent()) { return user.empty(); }
@@ -40,14 +44,18 @@ public class UserService {
         return Optional.of(userRepository.save(newUser));
     }
 
+    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
+
     public UserDTO getUserFromToken(String token) {
         User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
         return userMapper.mapUserToDTO(user);
     }
 
-    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
+    public UserDTO updateUserProfile(String token, UserDTO updateDetails) {
+        User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
+        User updatedUser = userMapper.updateUserDetails(user, updateDetails);
+        userRepository.save(updatedUser);
 
-    public String encodePassword(String password) {
-        return new BCryptPasswordEncoder().encode(password);
+        return userMapper.mapUserToDTO(updatedUser);
     }
 }

@@ -18,4 +18,10 @@ public class UserController {
     public ResponseEntity getUserProfile(@RequestHeader("Authorization") String authHeader) {
         return ResponseEntity.ok(userService.getUserFromToken(authHeader.substring(7)));
     }
+
+    @PatchMapping("/profile/edit")
+    public ResponseEntity updateUserProfile(@RequestHeader("Authorization") String authHeader,
+    @RequestBody UserDTO updateDetails) {
+        return ResponseEntity.ok(userService.updateUserProfile(authHeader.substring(7), updateDetails));
+    }
 }

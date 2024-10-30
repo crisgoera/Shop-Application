@@ -4,6 +4,7 @@ import com.goenaga.shop.user.enums.Role;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
@@ -21,6 +22,7 @@ import java.util.UUID;
 
 @Builder
 @Getter
+@Jacksonized
 @Document("users")
 public class User implements UserDetails {
     @Id
