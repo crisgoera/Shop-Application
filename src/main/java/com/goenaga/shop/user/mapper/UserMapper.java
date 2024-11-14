@@ -37,14 +37,13 @@ public class UserMapper {
 
     public User updateUserDetails (User user, UserDTO updateDetails) {
         ObjectMapper updateMapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-        ObjectMapper userMapper = new ObjectMapper().configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        ObjectMapper userMapper = new ObjectMapper();
 
         Map<String, Object> updateMap = updateMapper.convertValue(updateDetails, new TypeReference<Map<String, Object>>() {});
         Map<String, Object> userMap = userMapper.convertValue(user, new TypeReference<Map<String, Object>>() {});
 
         updateMap.forEach((key, value) -> userMap.put(key, value));
 
-//        TODO: Fix deserializing into User model. Current solution is a workaround(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES)
         return userMapper.convertValue(userMap, User.class);
     }
 }

@@ -7,7 +7,9 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.ServletException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -26,8 +28,10 @@ public class JWTService {
     private String TOKEN_HEADER = "Authorization";
     private String TOKEN_PREFIX = "Bearer ";
     private int TOKEN_EXPIRATION = 1000*60*60; // Expiration time in ms;
-    private final TokenRepository tokenRepository;
+    @Autowired
+    private TokenRepository tokenRepository;
 
+    @Transactional
     public String createToken(User user) {
 //        Delete previous issued token to the user if it has one assigned
         if (tokenRepository.findTokenByEmail(user.getEmail()).isPresent()) {

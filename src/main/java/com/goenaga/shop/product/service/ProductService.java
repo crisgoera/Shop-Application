@@ -22,7 +22,7 @@ public class ProductService {
     private final PhotoService photoService;
     private final ProductMapper productMapper;
 
-    public List<Product> getProducts() { return productRepository.findAll(); }
+    public Iterable<Product> getProducts() { return productRepository.findAll(); }
 
     public Product createNewProduct(NewProductDTO productRequest) throws IOException {
         Product newProduct = Product.builder()
@@ -31,7 +31,7 @@ public class ProductService {
                 .description(productRequest.getDescription())
                 .price(roundPrice(productRequest.getPrice()))
                 .currency(Currency.getInstance("EUR"))
-                .photos(photoService.processPhotos(productRequest.getImageTitles(), productRequest.getImages()))
+//                .photos(photoService.processPhotos(productRequest.getImageTitles(), productRequest.getImages()))
                 .build();
         return productRepository.save(newProduct);
     }
@@ -64,8 +64,8 @@ public class ProductService {
         return Math.round(price * 100.00)/100.00;
     }
 
-    public Product addProductPhotos(Product product, String[] titles, MultipartFile[] files) throws IOException {
-        product.setPhotos(photoService.processPhotos(titles, files));
-        return productRepository.save(product);
-    }
+//    public Product addProductPhotos(Product product, String[] titles, MultipartFile[] files) throws IOException {
+//        product.setPhotos(photoService.processPhotos(titles, files));
+//        return productRepository.save(product);
+//    }
 }

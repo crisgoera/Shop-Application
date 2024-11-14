@@ -1,8 +1,10 @@
 package com.goenaga.shop.product.repository;
 
 import com.goenaga.shop.product.model.Product;
-import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.stereotype.Repository;;
 
-public interface ProductRepository extends MongoRepository<Product, String> {
+@Repository
+public interface ProductRepository extends CrudRepository<Product, String> {
     Product findTopByOrderByProductIdDesc();
 }

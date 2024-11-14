@@ -10,9 +10,8 @@ import com.goenaga.shop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -55,7 +54,6 @@ public class UserService {
         User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
         User updatedUser = userMapper.updateUserDetails(user, updateDetails);
         userRepository.save(updatedUser);
-
         return userMapper.mapUserToDTO(updatedUser);
     }
 }

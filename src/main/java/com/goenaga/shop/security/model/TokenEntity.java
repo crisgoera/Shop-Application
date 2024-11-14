@@ -1,18 +1,22 @@
 package com.goenaga.shop.security.model;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import com.goenaga.shop.user.model.User;
+import jakarta.persistence.*;
+import lombok.*;
 
-@Document("tokens")
+
+@Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
+
+@Table(name = "tokens")
 public class TokenEntity {
     @Id
-    @NonNull
-    private final String email;
-    @NonNull
-    private final String token;
+    @Column(name = "user_email", nullable = false)
+    private String email;
+
+    @Column(nullable = false)
+    private String token;
 }
