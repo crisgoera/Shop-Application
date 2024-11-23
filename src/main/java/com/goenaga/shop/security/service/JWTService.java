@@ -34,35 +34,35 @@ public class JWTService {
     @Transactional
     public String createToken(User user) {
 //        Delete previous issued token to the user if it has one assigned
-        if (tokenRepository.findTokenByEmail(user.getEmail()).isPresent()) {
-            tokenRepository.deleteByEmail(user.getEmail());
+        if (tokenRepository.findById(user.getId().toString()).isPresent()) {
+            tokenRepository.deleteById(user.getId().toString());
         }
 
 //        Issue new token
         String jwtToken = issueToken(user.getEmail());
-        tokenRepository.save(TokenEntity.builder().email(user.getEmail()).token(jwtToken).build());
+        tokenRepository.save(TokenEntity.builder().user_Id(user.getId()).token(jwtToken).build());
         return TOKEN_PREFIX + jwtToken;
     }
 
-    public String refreshToken(String token) throws ServletException {
-//        Authenticate token and retrieve email
-        String email = parseClaims(token).getSubject();
-
-//        Check if an expired token exists in the DB for the user.
-        String lastIssuedToken = null;
-        Optional<TokenEntity> tokenInDB = tokenRepository.findTokenByEmail(email);
-        if (tokenInDB.isPresent()) { lastIssuedToken = tokenInDB.get().getToken(); }
-
-//        If provided expired token equals last issued token, issue a new token
-        if (Objects.equals(token, lastIssuedToken)) {
-            String newToken = issueToken(email);
-//        Update DB entry with the new token
-            tokenRepository.save(TokenEntity.builder().token(newToken).email(email).build());
-            return newToken;
-        } else {
-            throw new ServletException("Revoked access. Token no longer valid");
-        }
-    }
+//    public String refreshToken(String token) throws ServletException {
+////        Authenticate token and retrieve email
+////        String email = parseClaims(token).getSubject();
+//
+////        Check if an expired token exists in the DB for the user.
+////        String lastIssuedToken = null;
+////        Optional<TokenEntity> tokenInDB = tokenRepository.findTokenByEmail(email);
+////        if (tokenInDB.isPresent()) { lastIssuedToken = tokenInDB.get().getToken(); }
+//
+////        If provided expired token equals last issued token, issue a new token
+////        if (Objects.equals(token, lastIssuedToken)) {
+////            String newToken = issueToken(email);
+////        Update DB entry with the new token
+////            tokenRepository.save(TokenEntity.builder().token(newToken).user_Id().build());
+////            return newToken;
+////        } else {
+////            throw new ServletException("Revoked access. Token no longer valid");
+////        }
+//    }
 
 //    Retrieve secret key.
     private SecretKey getEncKey() {

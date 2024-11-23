@@ -36,15 +36,15 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String username = null;
 
         // Check if the header starts with "Bearer "
-        if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7); // Extract token
-            username = jwtService.getEmail(token); // Parse, validate and extract username from token
-
-//            If token expired, request a refresh token
-            if (jwtService.isTokenExpired(token)) {
-                token = jwtService.refreshToken(token);
-            }
-        }
+//        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+//            token = authHeader.substring(7); // Extract token
+//            username = jwtService.getEmail(token); // Parse, validate and extract username from token
+//
+////            If token expired, request a refresh token
+//            if (jwtService.isTokenExpired(token)) {
+//                token = jwtService.refreshToken(token);
+//            }
+//        }
 
         // If the token is valid and no authentication is set in the context
         if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {

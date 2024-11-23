@@ -28,22 +28,31 @@ import java.util.UUID;
 @Table(name = "app_user")
 public class User implements UserDetails {
     @Id
+    @Column (name = "id", nullable = false)
     private UUID id;
-    @Column(name = "email", nullable = false)
+    @Column (nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column (nullable = false)
     private String password;
 
     private String firstName;
     private String lastName;
 
     @CreatedDate
+    @Column (nullable = false)
     private Date createdAt;
 
     @LastModifiedDate
+    @Column (nullable = false)
     private Date lastModified;
+
+    @Column (nullable = false)
     private Role role;
+
+    @OneToOne (mappedBy = "user",cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private TokenEntity token;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
