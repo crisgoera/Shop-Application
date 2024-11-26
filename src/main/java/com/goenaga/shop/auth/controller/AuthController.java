@@ -16,11 +16,11 @@ public class AuthController {
 
     @PostMapping ("/signup")
     public ResponseEntity signUp(@RequestBody SignupRequest signupRequest) {
-        return authService.signUp(signupRequest);
+        return authService.userSignUp(signupRequest);
     }
 
     @PostMapping ("/login")
     public ResponseEntity login(@RequestBody LoginRequest request ) {
-        return authService.login(request);
+        return authService.userLogin(request);
     }
 }
