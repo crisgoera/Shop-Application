@@ -24,13 +24,9 @@ public class UserService {
         return new BCryptPasswordEncoder().encode(password);
     }
 
-    public Optional<User> createNewUser(SignupRequest request) {
-        Optional<User> user = userRepository.findUserByEmail(request.getEmail());
-        if (user.isPresent()) { return user.empty(); }
-
-//        Save new user in DB
+    public User createNewUser(SignupRequest request) {
         Date timestamp = new Date();
-        User newUser = User.builder()
+        return User.builder()
                 .id(UUID.randomUUID())
                 .email(request.getEmail())
                 .password(encodePassword(request.getPassword()))
@@ -40,8 +36,9 @@ public class UserService {
                 .lastModified(timestamp)
                 .role(Role.USER)
                 .build();
-        return Optional.of(userRepository.save(newUser));
     }
+
+    public void save(User user) { userRepository.save(user); }
 
     public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
 
