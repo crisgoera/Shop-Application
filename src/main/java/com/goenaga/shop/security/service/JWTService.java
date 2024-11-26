@@ -22,7 +22,7 @@ import java.util.*;
 public class JWTService {
     @Value("${application.security.jwt.encryption_key}")
     private String SECRET_KEY;
-    private final int TOKEN_EXPIRATION = 1000*60*60; // Expiration time in ms;
+    private final int TOKEN_EXPIRATION = 1000*60; // Expiration time in ms;
     @Autowired
     private TokenRepository tokenRepository;
 
@@ -42,22 +42,13 @@ public class JWTService {
                 .build();
     }
 
-    public String refreshToken(User user, String token) throws ServletException {
-//        Check if an expired token exists in the DB for the user.
-        String lastIssuedToken = null;
-        Optional<TokenEntity> tokenInDB = tokenRepository.findByUserId(user.getId());
-        if (tokenInDB.isPresent()) { lastIssuedToken = tokenInDB.get().getToken(); }
-
+    public String refreshToken(User user) {
 //        If provided expired token equals last issued token, issue a new token
-        if (Objects.equals(token, lastIssuedToken)) {
-            String newToken = issueToken(user);
+        String newToken = issueToken(user);
 
 //        Update DB entry with the new token
-            tokenRepository.save(TokenEntity.builder().token(newToken).user_Id(user.getId()).build());
-            return newToken;
-        } else {
-            throw new ServletException("Revoked access. Token not valid");
-        }
+        tokenRepository.save(TokenEntity.builder().token(newToken).user_Id(user.getId()).build());
+        return newToken;
     }
 
     public void save(TokenEntity entity) { tokenRepository.save(entity); }
