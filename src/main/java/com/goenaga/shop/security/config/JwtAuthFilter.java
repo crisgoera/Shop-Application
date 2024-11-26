@@ -1,11 +1,13 @@
 package com.goenaga.shop.security.config;
 
 import com.goenaga.shop.security.service.JWTService;
+import com.goenaga.shop.user.model.User;
+import com.goenaga.shop.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -23,6 +25,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private JWTService jwtService;
     @Autowired
     private UserDetailsService userDetailsService;
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,11 +43,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7); // Extract token
             username = jwtService.getEmail(token); // Parse, validate and extract username from token
+            User user = userService.findUserByEmail(username).get();
 
 //            If token expired, request a refresh token
-//            if (jwtService.isTokenExpired(token)) {
-//                token = jwtService.refreshToken(token);
-//            }
+            if (jwtService.isTokenExpired(token)) {
+                token = jwtService.refreshToken(user, token);
+            }
         }
 
         // If the token is valid and no authentication is set in the context

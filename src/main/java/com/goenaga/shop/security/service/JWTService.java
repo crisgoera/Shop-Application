@@ -14,10 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -45,25 +42,23 @@ public class JWTService {
                 .build();
     }
 
-//    public String refreshToken(String token) throws ServletException {
-////        Authenticate token and retrieve email
-////        String email = parseClaims(token).getSubject();
-//
-////        Check if an expired token exists in the DB for the user.
-////        String lastIssuedToken = null;
-////        Optional<TokenEntity> tokenInDB = tokenRepository.findTokenByEmail(email);
-////        if (tokenInDB.isPresent()) { lastIssuedToken = tokenInDB.get().getToken(); }
-//
-////        If provided expired token equals last issued token, issue a new token
-////        if (Objects.equals(token, lastIssuedToken)) {
-////            String newToken = issueToken(email);
-////        Update DB entry with the new token
-////            tokenRepository.save(TokenEntity.builder().token(newToken).user_Id().build());
-////            return newToken;
-////        } else {
-////            throw new ServletException("Revoked access. Token no longer valid");
-////        }
-//    }
+    public String refreshToken(User user, String token) throws ServletException {
+//        Check if an expired token exists in the DB for the user.
+        String lastIssuedToken = null;
+        Optional<TokenEntity> tokenInDB = tokenRepository.findByUserId(user.getId());
+        if (tokenInDB.isPresent()) { lastIssuedToken = tokenInDB.get().getToken(); }
+
+//        If provided expired token equals last issued token, issue a new token
+        if (Objects.equals(token, lastIssuedToken)) {
+            String newToken = issueToken(user);
+
+//        Update DB entry with the new token
+            tokenRepository.save(TokenEntity.builder().token(newToken).user_Id(user.getId()).build());
+            return newToken;
+        } else {
+            throw new ServletException("Revoked access. Token not valid");
+        }
+    }
 
     public void save(TokenEntity entity) { tokenRepository.save(entity); }
 
