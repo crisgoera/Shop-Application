@@ -50,9 +50,9 @@ public class User implements UserDetails {
     @Column (nullable = false)
     private Role role;
 
-    @OneToOne (mappedBy = "user",cascade = CascadeType.ALL)
+    @OneToOne (mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
-    private TokenEntity token;
+    private TokenEntity tokenEntity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -62,5 +62,9 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public void setTokenEntity(TokenEntity tokenEntity) {
+        this.tokenEntity = tokenEntity;
     }
 }

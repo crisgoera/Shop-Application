@@ -12,6 +12,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Setter
 
 @Table(name = "token")
 public class TokenEntity {
@@ -26,5 +27,4 @@ public class TokenEntity {
     @MapsId
     @JoinColumn (name = "user_id")
     private User user;
-
 }
