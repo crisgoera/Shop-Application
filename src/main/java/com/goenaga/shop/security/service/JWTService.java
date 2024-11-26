@@ -25,23 +25,24 @@ import java.util.Optional;
 public class JWTService {
     @Value("${application.security.jwt.encryption_key}")
     private String SECRET_KEY;
-    private String TOKEN_HEADER = "Authorization";
-    private String TOKEN_PREFIX = "Bearer ";
-    private int TOKEN_EXPIRATION = 1000*60*60; // Expiration time in ms;
+    private final int TOKEN_EXPIRATION = 1000*60*60; // Expiration time in ms;
     @Autowired
     private TokenRepository tokenRepository;
 
     @Transactional
-    public String createToken(User user) {
+    public TokenEntity createTokenEntity(User user) {
 //        Delete previous issued token to the user if it has one assigned
-        if (tokenRepository.findById(user.getId().toString()).isPresent()) {
-            tokenRepository.deleteById(user.getId().toString());
+        if (tokenRepository.findByUserId(user.getId()).isPresent()) {
+            tokenRepository.deleteByUserId(user.getId());
         }
 
 //        Issue new token
-        String jwtToken = issueToken(user.getEmail());
-        tokenRepository.save(TokenEntity.builder().user_Id(user.getId()).token(jwtToken).build());
-        return TOKEN_PREFIX + jwtToken;
+        String jwtToken = issueToken(user);
+        return TokenEntity.builder()
+                .user_Id(user.getId())
+                .token(jwtToken)
+                .user(user)
+                .build();
     }
 
 //    public String refreshToken(String token) throws ServletException {
@@ -64,6 +65,8 @@ public class JWTService {
 ////        }
 //    }
 
+    public void save(TokenEntity entity) { tokenRepository.save(entity); }
+
 //    Retrieve secret key.
     private SecretKey getEncKey() {
         byte[] encBytes = Base64.getDecoder().decode(SECRET_KEY);
@@ -71,13 +74,13 @@ public class JWTService {
     }
 
 //    Issue new token instance
-    private String issueToken(String email) {
+    public String issueToken(User user) {
         Date timestamp = new Date();
         Date expiration = new Date(timestamp.getTime() + TOKEN_EXPIRATION);
 
         return  Jwts.builder()
                     .issuer("authService")
-                    .subject(email)
+                    .subject(user.getEmail())
                     .issuedAt(timestamp)
                     .expiration(expiration)
                     .signWith(getEncKey())
