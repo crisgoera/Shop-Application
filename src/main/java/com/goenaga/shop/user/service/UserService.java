@@ -10,9 +10,8 @@ import com.goenaga.shop.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import java.util.Date;
-import java.util.Optional;
-import java.util.UUID;
+
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -21,13 +20,13 @@ public class UserService {
     private final JWTService jwtService;
     private final UserMapper userMapper;
 
-    public Optional<User> createNewUser(SignupRequest request) {
-        Optional<User> user = userRepository.findUserByEmail(request.getEmail());
-        if (user.isPresent()) { return user.empty(); }
+    public String encodePassword(String password) {
+        return new BCryptPasswordEncoder().encode(password);
+    }
 
-//        Save new user in DB
+    public User createNewUser(SignupRequest request) {
         Date timestamp = new Date();
-        User newUser = User.builder()
+        return User.builder()
                 .id(UUID.randomUUID())
                 .email(request.getEmail())
                 .password(encodePassword(request.getPassword()))
@@ -37,17 +36,21 @@ public class UserService {
                 .lastModified(timestamp)
                 .role(Role.USER)
                 .build();
-        return Optional.of(userRepository.save(newUser));
     }
+
+    public void save(User user) { userRepository.save(user); }
+
+    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
 
     public UserDTO getUserFromToken(String token) {
         User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
         return userMapper.mapUserToDTO(user);
     }
 
-    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
-
-    public String encodePassword(String password) {
-        return new BCryptPasswordEncoder().encode(password);
+    public UserDTO updateUserProfile(String token, UserDTO updateDetails) {
+        User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
+        User updatedUser = userMapper.updateUserDetails(user, updateDetails);
+        userRepository.save(updatedUser);
+        return userMapper.mapUserToDTO(updatedUser);
     }
 }

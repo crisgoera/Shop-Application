@@ -1,42 +1,58 @@
 package com.goenaga.shop.user.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.goenaga.shop.security.model.TokenEntity;
 import com.goenaga.shop.user.enums.Role;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NonNull;
+import jakarta.persistence.*;
+import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.LastModifiedDate;
-import org.springframework.data.mongodb.core.index.Indexed;
-import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+@Entity
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 @Getter
-@Document("users")
+@Jacksonized
+@JsonIgnoreProperties(ignoreUnknown = true)
+
+@Table(name = "app_user")
 public class User implements UserDetails {
     @Id
-    private final UUID id;
-    @Indexed (unique = true)
-    @NonNull
-    private final String email;
-    @NonNull
-    private final String password;
-    private final String firstName;
-    private final String lastName;
+    @Column (name = "id", nullable = false)
+    private UUID id;
+    @Column (nullable = false)
+    private String email;
+
+    @Column (nullable = false)
+    private String password;
+
+    private String firstName;
+    private String lastName;
+
     @CreatedDate
-    private final Date createdAt;
+    @Column (nullable = false)
+    private Date createdAt;
+
     @LastModifiedDate
-    private final Date lastModified;
-    private final Role role;
+    @Column (nullable = false)
+    private Date lastModified;
+
+    @Column (nullable = false)
+    private Role role;
+
+    @OneToOne (mappedBy = "user", cascade = CascadeType.ALL)
+    @PrimaryKeyJoinColumn
+    private TokenEntity tokenEntity;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
@@ -46,5 +62,9 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
+    }
+
+    public void setTokenEntity(TokenEntity tokenEntity) {
+        this.tokenEntity = tokenEntity;
     }
 }

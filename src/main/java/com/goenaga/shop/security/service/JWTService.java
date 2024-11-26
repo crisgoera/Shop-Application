@@ -7,15 +7,14 @@ import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.ServletException;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
-import java.util.Base64;
-import java.util.Date;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -23,42 +22,36 @@ import java.util.Optional;
 public class JWTService {
     @Value("${application.security.jwt.encryption_key}")
     private String SECRET_KEY;
-    private String TOKEN_HEADER = "Authorization";
-    private String TOKEN_PREFIX = "Bearer ";
-    private int TOKEN_EXPIRATION = 1000*60*60; // Expiration time in ms;
-    private final TokenRepository tokenRepository;
+    private final int TOKEN_EXPIRATION = 1000*60; // Expiration time in ms;
+    @Autowired
+    private TokenRepository tokenRepository;
 
-    public String createToken(User user) {
+    @Transactional
+    public TokenEntity createTokenEntity(User user) {
 //        Delete previous issued token to the user if it has one assigned
-        if (tokenRepository.findTokenByEmail(user.getEmail()).isPresent()) {
-            tokenRepository.deleteByEmail(user.getEmail());
+        if (tokenRepository.findByUserId(user.getId()).isPresent()) {
+            tokenRepository.deleteByUserId(user.getId());
         }
 
 //        Issue new token
-        String jwtToken = issueToken(user.getEmail());
-        tokenRepository.save(TokenEntity.builder().email(user.getEmail()).token(jwtToken).build());
-        return TOKEN_PREFIX + jwtToken;
+        String jwtToken = issueToken(user);
+        return TokenEntity.builder()
+                .user_Id(user.getId())
+                .token(jwtToken)
+                .user(user)
+                .build();
     }
 
-    public String refreshToken(String token) throws ServletException {
-//        Authenticate token and retrieve email
-        String email = parseClaims(token).getSubject();
-
-//        Check if an expired token exists in the DB for the user.
-        String lastIssuedToken = null;
-        Optional<TokenEntity> tokenInDB = tokenRepository.findTokenByEmail(email);
-        if (tokenInDB.isPresent()) { lastIssuedToken = tokenInDB.get().getToken(); }
-
+    public String refreshToken(User user) {
 //        If provided expired token equals last issued token, issue a new token
-        if (Objects.equals(token, lastIssuedToken)) {
-            String newToken = issueToken(email);
+        String newToken = issueToken(user);
+
 //        Update DB entry with the new token
-            tokenRepository.save(TokenEntity.builder().token(newToken).email(email).build());
-            return newToken;
-        } else {
-            throw new ServletException("Revoked access. Token no longer valid");
-        }
+        tokenRepository.save(TokenEntity.builder().token(newToken).user_Id(user.getId()).build());
+        return newToken;
     }
+
+    public void save(TokenEntity entity) { tokenRepository.save(entity); }
 
 //    Retrieve secret key.
     private SecretKey getEncKey() {
@@ -67,13 +60,13 @@ public class JWTService {
     }
 
 //    Issue new token instance
-    private String issueToken(String email) {
+    public String issueToken(User user) {
         Date timestamp = new Date();
         Date expiration = new Date(timestamp.getTime() + TOKEN_EXPIRATION);
 
         return  Jwts.builder()
                     .issuer("authService")
-                    .subject(email)
+                    .subject(user.getEmail())
                     .issuedAt(timestamp)
                     .expiration(expiration)
                     .signWith(getEncKey())

@@ -1,11 +1,14 @@
 package com.goenaga.shop.security.config;
 
 import com.goenaga.shop.security.service.JWTService;
+import com.goenaga.shop.user.model.User;
+import com.goenaga.shop.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,12 +18,16 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Component
-@RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
-    private final JWTService jwtService;
-    private final UserDetailsService userDetailsService;
+    @Autowired
+    private JWTService jwtService;
+    @Autowired
+    private UserDetailsService userDetailsService;
+    @Autowired
+    private UserService userService;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -33,14 +40,22 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         String token = null;
         String username = null;
 
-        // Check if the header starts with "Bearer "
+//         Check if the header starts with "Bearer "
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7); // Extract token
             username = jwtService.getEmail(token); // Parse, validate and extract username from token
+            User user = userService.findUserByEmail(username).get();
+            String lastIssuedToken = user.getTokenEntity().getToken();
 
-//            If token expired, request a refresh token
+            if (!Objects.equals(token, lastIssuedToken)) {
+                throw new ServletException("Revoked access. Token not valid");
+            }
+
+//            If token expired and is the last one issued, request a refresh token
             if (jwtService.isTokenExpired(token)) {
-                token = jwtService.refreshToken(token);
+                token = jwtService.refreshToken(user);
+            } else {
+                throw new ServletException("Revoked access. Token not valid");
             }
         }
 

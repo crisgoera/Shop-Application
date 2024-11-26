@@ -4,6 +4,7 @@ import com.goenaga.shop.error.model.ErrorResponse;
 import com.goenaga.shop.auth.model.AuthResponse;
 import com.goenaga.shop.auth.model.LoginRequest;
 import com.goenaga.shop.auth.model.SignupRequest;
+import com.goenaga.shop.security.model.TokenEntity;
 import com.goenaga.shop.security.service.JWTService;
 import com.goenaga.shop.user.model.User;
 import com.goenaga.shop.user.service.UserService;
@@ -15,32 +16,35 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
-
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final UserService userService;
     private final JWTService jwtService;
+    private final String TOKEN_PREFIX = "Bearer ";
 
-    public ResponseEntity signUp(SignupRequest request) {
-        Optional<User> newUserOptional = userService.createNewUser(request);
-        if (newUserOptional.isEmpty()) {
+    public ResponseEntity userSignUp(SignupRequest request) {
+        Optional<User> userRequest = userService.findUserByEmail(request.getEmail());
+        if (userRequest.isPresent()) {
             ErrorResponse error = ErrorResponse.builder()
                     .message("Email already in use")
                     .build();
-
             return ResponseEntity.status(HttpStatus.UNPROCESSABLE_ENTITY).body(error);
         }
 
-        User newUser = newUserOptional.get();
+        User newUser = userService.createNewUser(request);
+        TokenEntity tokenEntity = jwtService.createTokenEntity(newUser);
+        newUser.setTokenEntity(tokenEntity);
+        userService.save(newUser);
+        jwtService.save(tokenEntity);
 
-//        Issue new JWT token and return response
         return ResponseEntity.ok(AuthResponse.builder()
-                .token(jwtService.createToken(newUser))
-                .build());
+                        .token(TOKEN_PREFIX + tokenEntity.getToken())
+                        .build()
+        );
     }
 
-    public ResponseEntity login(LoginRequest request) {
+    public ResponseEntity userLogin(LoginRequest request) {
         Optional<User> userOptional = userService.findUserByEmail(request.getEmail());
         if (userOptional.isEmpty()) { return unauthorizedResponse(); }
 
@@ -50,8 +54,11 @@ public class AuthService {
             return unauthorizedResponse();
         }
 
+        TokenEntity tokenEntity = jwtService.createTokenEntity(user);
+        jwtService.save(tokenEntity);
+
         return ResponseEntity.ok(AuthResponse.builder()
-                .token(jwtService.createToken(user))
+                .token(TOKEN_PREFIX + tokenEntity.getToken())
                 .build());
     }
 

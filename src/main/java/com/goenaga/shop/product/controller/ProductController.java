@@ -21,7 +21,7 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<List<Product>> getProducts() { return ResponseEntity.ok(productService.getProducts()); }
+    public ResponseEntity<Iterable<Product>> getProducts() { return ResponseEntity.ok(productService.getProducts()); }
 
     @PostMapping("/new")
     public ResponseEntity<Product> createProduct(@RequestBody NewProductDTO productRequest) throws IOException {
@@ -64,20 +64,20 @@ public class ProductController {
     }
 
 //    TODO: Fix POSTMAN image upload on requests to test photo implementation
-    @PatchMapping(path = "{id}/addphotos", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-    public ResponseEntity addProductPhotos(@PathVariable String id, @RequestPart MultipartFile[] files,
-        @RequestPart String[] titles) throws IOException {
-        Optional<Product> foundProduct = productService.getProductById(id);
-        if (foundProduct.isEmpty()) {
-            ErrorResponse error = ErrorResponse.builder()
-                    .message("Resource not found")
-                    .build();
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-        }
-        Product updatedProduct = productService.addProductPhotos(foundProduct.get(), titles, files);
-
-        return ResponseEntity.ok(updatedProduct);
-    }
+//    @PatchMapping(path = "{id}/addphotos", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
+//    public ResponseEntity addProductPhotos(@PathVariable String id, @RequestPart MultipartFile[] files,
+//        @RequestPart String[] titles) throws IOException {
+//        Optional<Product> foundProduct = productService.getProductById(id);
+//        if (foundProduct.isEmpty()) {
+//            ErrorResponse error = ErrorResponse.builder()
+//                    .message("Resource not found")
+//                    .build();
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+//        }
+//        Product updatedProduct = productService.addProductPhotos(foundProduct.get(), titles, files);
+//
+//        return ResponseEntity.ok(updatedProduct);
+//    }
 
 //    TODO: Remove photos from product functionality
 }

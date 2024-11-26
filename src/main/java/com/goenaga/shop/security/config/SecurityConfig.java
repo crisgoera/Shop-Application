@@ -1,6 +1,7 @@
 package com.goenaga.shop.security.config;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -24,10 +25,11 @@ import static org.springframework.security.web.util.matcher.AntPathRequestMatche
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
 public class SecurityConfig {
-    private final JwtAuthFilter authFilter;
-    private final AuthenticationProvider authenticationProvider;
+    @Autowired
+    private JwtAuthFilter authFilter;
+    @Autowired
+    private AuthenticationProvider authenticationProvider;
 
     private String[] OPEN_URL = {
             "api/v1/auth/**",
@@ -44,7 +46,7 @@ public class SecurityConfig {
     };
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtAuthFilter authFilter) throws Exception {
         http
                 .csrf(csrf -> csrf.disable()) // Disable CSRF for stateless APIs
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
