@@ -27,7 +27,6 @@ public class UserService {
     public User createNewUser(SignupRequest request) {
         Date timestamp = new Date();
         return User.builder()
-                .id(UUID.randomUUID())
                 .email(request.getEmail())
                 .password(encodePassword(request.getPassword()))
                 .firstName(request.getFirstName())
