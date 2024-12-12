@@ -1,9 +1,6 @@
 package com.goenaga.shop.product.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
@@ -16,11 +13,12 @@ import java.util.Currency;
 @NoArgsConstructor
 @AllArgsConstructor
 
-@Table (name = "product")
+@Table(name = "product")
 public class Product {
     @Id
-    @Column(name = "product_id", nullable = false)
-    private String productId;
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "product_id", nullable = false, updatable = false)
+    private Long productId;
 
     @Column(unique = true, nullable = false)
     private String name;

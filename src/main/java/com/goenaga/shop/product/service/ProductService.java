@@ -26,12 +26,10 @@ public class ProductService {
 
     public Product createNewProduct(NewProductDTO productRequest) throws IOException {
         Product newProduct = Product.builder()
-                .productId(productIdSequencer())
                 .name(productRequest.getName())
                 .description(productRequest.getDescription())
                 .price(roundPrice(productRequest.getPrice()))
                 .currency(Currency.getInstance("EUR"))
-//                .photos(photoService.processPhotos(productRequest.getImageTitles(), productRequest.getImages()))
                 .build();
         return productRepository.save(newProduct);
     }
@@ -49,15 +47,6 @@ public class ProductService {
     public ResponseEntity removeProduct(Product product) {
         productRepository.delete(product);
         return new ResponseEntity(HttpStatus.OK);
-    }
-
-    private String productIdSequencer() {
-        try {
-            int lastIssuedId = Integer.parseInt(productRepository.findTopByOrderByProductIdDesc().getProductId());
-            return String.valueOf(lastIssuedId + 1);
-        } catch (NullPointerException nullPointer) {
-            return "1";
-        }
     }
 
     private double roundPrice(double price) {
