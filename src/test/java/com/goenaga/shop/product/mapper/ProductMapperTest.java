@@ -1,5 +1,6 @@
 package com.goenaga.shop.product.mapper;
 
+import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import org.junit.jupiter.api.Test;
@@ -17,6 +18,7 @@ public class ProductMapperTest {
         ProductDetails productDetails = ProductDetails.builder()
                 .productId(1L)
                 .name("Test product")
+                .description("Random desc")
                 .price(15)
                 .currency(Currency.getInstance("EUR"))
                 .build();
@@ -24,15 +26,18 @@ public class ProductMapperTest {
         Product expectedProduct = Product.builder()
                 .productId(1L)
                 .name("Test product")
+                .description("Random desc")
                 .price(15)
                 .currency(Currency.getInstance("EUR"))
                 .build();
 
         Product actualProduct = productMapper.productDetailsToProduct(productDetails);
 
-        assertEquals(actualProduct.getName(), expectedProduct.getName());
         assertEquals(actualProduct.getProductId(), expectedProduct.getProductId());
+        assertEquals(actualProduct.getName(), expectedProduct.getName());
+        assertEquals(actualProduct.getDescription(), expectedProduct.getDescription());
         assertEquals(actualProduct.getPrice(), expectedProduct.getPrice());
+        assertEquals(actualProduct.getCurrency(), expectedProduct.getCurrency());
     }
 
     @Test
@@ -40,21 +45,49 @@ public class ProductMapperTest {
         Product product = Product.builder()
                 .productId(1L)
                 .name("Test product")
+                .description("Random desc")
                 .price(15)
                 .currency(Currency.getInstance("EUR"))
                 .build();
 
-        ProductDetails expectedDetails = ProductDetails.builder()
+        ProductDetails expectedProductDetails = ProductDetails.builder()
                 .productId(1L)
                 .name("Test product")
+                .description("Random desc")
                 .price(15)
                 .currency(Currency.getInstance("EUR"))
                 .build();
 
-        ProductDetails actualDetails = productMapper.productToProductDetails(product);
+        ProductDetails actualProductDetails = productMapper.productToProductDetails(product);
 
-        assertEquals(actualDetails.getName(), expectedDetails.getName());
-        assertEquals(actualDetails.getProductId(), expectedDetails.getProductId());
-        assertEquals(actualDetails.getPrice(), expectedDetails.getPrice());
+        assertEquals(actualProductDetails.getProductId(), expectedProductDetails.getProductId());
+        assertEquals(actualProductDetails.getName(), expectedProductDetails.getName());
+        assertEquals(actualProductDetails.getDescription(), expectedProductDetails.getDescription());
+        assertEquals(actualProductDetails.getPrice(), expectedProductDetails.getPrice());
+        assertEquals(actualProductDetails.getCurrency(), expectedProductDetails.getCurrency());
+    }
+
+    @Test
+    void newProductRequestToProduct_ReturnsMappedProductObject() {
+        NewProductRequest productRequest = NewProductRequest.builder()
+                .name("Product request")
+                .description("New product desc")
+                .price(25)
+                .currency(Currency.getInstance("EUR"))
+                .build();
+
+        Product expectedProduct = Product.builder()
+                .name("Product request")
+                .description("New product desc")
+                .price(25)
+                .currency(Currency.getInstance("EUR"))
+                .build();
+
+        Product actualProduct = productMapper.newProductRequestToProduct(productRequest);
+
+        assertEquals(actualProduct.getName(), expectedProduct.getName());
+        assertEquals(actualProduct.getDescription(), expectedProduct.getDescription());
+        assertEquals(actualProduct.getPrice(), expectedProduct.getPrice());
+        assertEquals(actualProduct.getCurrency(), expectedProduct.getCurrency());
     }
 }
