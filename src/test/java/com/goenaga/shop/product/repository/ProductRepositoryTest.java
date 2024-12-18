@@ -22,8 +22,8 @@ class ProductRepositoryTest {
     @Autowired
     private ProductRepository productRepository;
 
-    @BeforeEach
-    private void mockSetup() {
+    @Test
+    void findAll() {
         Product mockedProduct1 = Product.builder()
                 .name("Test 1")
                 .price(25)
@@ -37,16 +37,12 @@ class ProductRepositoryTest {
                 .currency(Currency.getInstance("EUR"))
                 .build();
         productRepository.save(mockedProduct2);
-    }
 
-
-    @Test
-    void findAll() {
         var productList = productRepository.findAll();
 
         Assertions.assertThat(productList).isNotNull().isInstanceOf(List.class);
         assertEquals(productList.size(), 2);
-        assertEquals(productList.get(0).getName(),  "Test 1");
-        assertEquals(productList.get(1).getName(), "Test 2");
+        assertEquals(productList.get(0), mockedProduct1);
+        assertEquals(productList.get(1), mockedProduct2);
     }
 }
