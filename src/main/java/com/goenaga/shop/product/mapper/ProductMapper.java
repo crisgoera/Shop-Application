@@ -4,8 +4,6 @@ import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import org.mapstruct.Mapper;
 
-
-
 @Mapper
 public interface ProductMapper {
     Product productDetailsToProduct(ProductDetails productDetails);
