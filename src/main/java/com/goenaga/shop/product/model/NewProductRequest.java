@@ -9,14 +9,11 @@ import java.util.Currency;
 
 @Builder
 @Getter
-public class NewProductDTO {
+public class NewProductRequest {
     @NonNull
     private String name;
     private String description;
     @NonNull
     private double price;
     private Currency currency;
-    private int stock;
-    private MultipartFile[] images;
-    private String[] imageTitles;
 }
