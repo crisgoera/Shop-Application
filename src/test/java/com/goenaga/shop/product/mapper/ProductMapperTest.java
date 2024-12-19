@@ -16,7 +16,6 @@ public class ProductMapperTest {
     @Test
     void productDetailsToProduct_ReturnsMappedProductObject() {
         ProductDetails productDetails = ProductDetails.builder()
-                .productId(1L)
                 .name("Test product")
                 .description("Random desc")
                 .price(15)
@@ -51,7 +50,6 @@ public class ProductMapperTest {
                 .build();
 
         ProductDetails expectedProductDetails = ProductDetails.builder()
-                .productId(1L)
                 .name("Test product")
                 .description("Random desc")
                 .price(15)
@@ -60,7 +58,6 @@ public class ProductMapperTest {
 
         ProductDetails actualProductDetails = productMapper.productToProductDetails(product);
 
-        assertEquals(actualProductDetails.getProductId(), expectedProductDetails.getProductId());
         assertEquals(actualProductDetails.getName(), expectedProductDetails.getName());
         assertEquals(actualProductDetails.getDescription(), expectedProductDetails.getDescription());
         assertEquals(actualProductDetails.getPrice(), expectedProductDetails.getPrice());
@@ -89,5 +86,58 @@ public class ProductMapperTest {
         assertEquals(actualProduct.getDescription(), expectedProduct.getDescription());
         assertEquals(actualProduct.getPrice(), expectedProduct.getPrice());
         assertEquals(actualProduct.getCurrency(), expectedProduct.getCurrency());
+    }
+
+    @Test
+    void updateProductWithProductDetails_MapsFieldsToExistingObject() {
+        ProductDetails updateDetails = ProductDetails.builder()
+                .name("Updated product")
+                .description("Updated description")
+                .price(0.0)
+                .currency(Currency.getInstance("EUR"))
+                .build();
+
+        Product product = Product.builder()
+                .productId(1L)
+                .price(15)
+                .currency(Currency.getInstance("USD"))
+                .build();
+
+        Product expectedProduct = Product.builder()
+                .productId(1L)
+                .name("Updated product")
+                .description("Updated description")
+                .price(15)
+                .currency(Currency.getInstance("EUR"))
+                .build();
+
+        Product actualProduct = productMapper.updateDetailsToProduct(updateDetails, product);
+
+        assertEquals(actualProduct.getProductId(), expectedProduct.getProductId());
+        assertEquals(actualProduct.getName(), expectedProduct.getName());
+        assertEquals(actualProduct.getDescription(), expectedProduct.getDescription());
+        assertEquals(actualProduct.getPrice(), expectedProduct.getPrice());
+        assertEquals(actualProduct.getCurrency(), expectedProduct.getCurrency());
+    }
+
+    @Test
+    void UpdateProductWithNullDetails_DoesNotMapExistingProduct() {
+        Product product = Product.builder()
+                .productId(1L)
+                .name("Test product")
+                .description("Test description")
+                .price(33)
+                .currency(Currency.getInstance("USD"))
+                .build();
+
+        ProductDetails updateDetails = ProductDetails.builder().build();
+
+        Product actualProduct = productMapper.updateDetailsToProduct(updateDetails, product);
+
+        assertEquals(actualProduct.getProductId(), product.getProductId());
+        assertEquals(actualProduct.getName(), product.getName());
+        assertEquals(actualProduct.getDescription(), product.getDescription());
+        assertEquals(actualProduct.getPrice(), product.getPrice());
+        assertEquals(actualProduct.getCurrency(), product.getCurrency());
     }
 }
