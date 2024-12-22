@@ -1,16 +1,15 @@
 package com.goenaga.shop.product.service;
 
 import com.goenaga.shop.product.mapper.ProductMapper;
-import com.goenaga.shop.product.model.NewProductDTO;
+import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
+import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
-import java.util.Currency;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,28 +18,32 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ProductService {
     private final ProductRepository productRepository;
-    private final PhotoService photoService;
     private final ProductMapper productMapper;
 
-    public Iterable<Product> getProducts() { return productRepository.findAll(); }
+    public List<ProductDetails> getProducts() {
+        List<Product> productList = productRepository.findAll();
+        List<ProductDetails> productDetailsList = new ArrayList<>();
 
-    public Product createNewProduct(NewProductDTO productRequest) throws IOException {
-        Product newProduct = Product.builder()
-                .name(productRequest.getName())
-                .description(productRequest.getDescription())
-                .price(roundPrice(productRequest.getPrice()))
-                .currency(Currency.getInstance("EUR"))
-                .build();
-        return productRepository.save(newProduct);
+        productList.forEach((product) -> {
+            productDetailsList.add(productMapper.productToProductDetails(product));
+        });
+
+        return productDetailsList;
+    }
+
+    public Product createNewProduct(NewProductRequest productRequest) {
+        return productRepository.save(productMapper.newProductRequestToProduct(productRequest));
     }
 
     public Optional<Product> getProductById(String id) {
         return productRepository.findById(id);
     }
 
-    public Product updateProduct(Product product, Product updateDetails) {
-        updateDetails.setPrice(roundPrice(updateDetails.getPrice()));
-        Product updatedProduct = productMapper.updateProductDetails(product, updateDetails);
+    public Product updateProduct(Product product, ProductDetails updateDetails) {
+//        double type can't be null, so it is not ignored by the mapper
+        if (updateDetails.getPrice() == 0.0) { updateDetails.setPrice(product.getPrice()); }
+
+        Product updatedProduct = productMapper.productDetailsToProduct(updateDetails);
         return productRepository.save(updatedProduct);
     }
 
@@ -52,9 +55,4 @@ public class ProductService {
     private double roundPrice(double price) {
         return Math.round(price * 100.00)/100.00;
     }
-
-//    public Product addProductPhotos(Product product, String[] titles, MultipartFile[] files) throws IOException {
-//        product.setPhotos(photoService.processPhotos(titles, files));
-//        return productRepository.save(product);
-//    }
 }

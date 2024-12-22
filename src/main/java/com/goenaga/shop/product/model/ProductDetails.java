@@ -9,7 +9,6 @@ import java.util.Currency;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProductDetails {
-    private Long productId;
     private String name;
     private String description;
     private double price;
