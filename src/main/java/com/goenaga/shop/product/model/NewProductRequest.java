@@ -13,7 +13,6 @@ public class NewProductRequest {
     @NonNull
     private String name;
     private String description;
-    @NonNull
     private double price;
     private Currency currency;
 }
