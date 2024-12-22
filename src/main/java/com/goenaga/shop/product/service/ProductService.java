@@ -40,11 +40,7 @@ public class ProductService {
     }
 
     public Product updateProduct(Product product, ProductDetails updateDetails) {
-//        double type can't be null, so it is not ignored by the mapper
-        if (updateDetails.getPrice() == 0.0) { updateDetails.setPrice(product.getPrice()); }
-
-        Product updatedProduct = productMapper.productDetailsToProduct(updateDetails);
-        return productRepository.save(updatedProduct);
+        return productRepository.save(productMapper.productDetailsToProduct(updateDetails));
     }
 
     public ResponseEntity removeProduct(Product product) {
