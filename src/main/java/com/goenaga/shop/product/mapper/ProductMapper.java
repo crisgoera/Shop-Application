@@ -1,24 +1,22 @@
 package com.goenaga.shop.product.mapper;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
-import com.goenaga.shop.user.model.User;
-import org.springframework.stereotype.Service;
-import java.util.Map;
+import com.goenaga.shop.product.model.ProductDetails;
+import org.mapstruct.*;
 
+@Mapper(componentModel = "spring" ,nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+public interface ProductMapper {
+    Product productDetailsToProduct(ProductDetails productDetails);
+    ProductDetails productToProductDetails(Product product);
+    Product newProductRequestToProduct(NewProductRequest newProduct);
 
-@Service
-public class ProductMapper {
-    public Product updateProductDetails (Product product, Product updateDetails) {
-        ObjectMapper mapper = new ObjectMapper().setSerializationInclusion(JsonInclude.Include.NON_NULL);
-
-        Map<String, Object> updateMap = mapper.convertValue(updateDetails, new TypeReference<Map<String, Object>>() {});
-        Map<String, Object> productMap = mapper.convertValue(product, new TypeReference<Map<String, Object>>() {});
-
-        updateMap.forEach((key, value) -> productMap.put(key, value));
-
-        return mapper.convertValue(productMap, Product.class);
+    @BeforeMapping
+    default void beforeUpdate(ProductDetails updateDetails, @MappingTarget Product product) {
+        if (updateDetails.getPrice() == 0.0) {
+            updateDetails.setPrice(product.getPrice());
+        }
     }
+    Product updateDetailsToProduct(ProductDetails updateDetails, @MappingTarget Product product);
+
 }

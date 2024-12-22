@@ -1,16 +1,14 @@
 package com.goenaga.shop.product.controller;
 
 import com.goenaga.shop.error.model.ErrorResponse;
-import com.goenaga.shop.product.model.NewProductDTO;
+import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
+import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-import java.io.IOException;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,10 +19,10 @@ public class ProductController {
     private final ProductService productService;
 
     @GetMapping
-    public ResponseEntity<Iterable<Product>> getProducts() { return ResponseEntity.ok(productService.getProducts()); }
+    public ResponseEntity<List<ProductDetails>> getProducts() { return ResponseEntity.ok(productService.getProducts()); }
 
     @PostMapping("/new")
-    public ResponseEntity<Product> createProduct(@RequestBody NewProductDTO productRequest) throws IOException {
+    public ResponseEntity<Product> createProduct(@RequestBody NewProductRequest productRequest) {
         return ResponseEntity.ok(productService.createNewProduct(productRequest));
     }
 
@@ -40,7 +38,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}/edit")
-    public ResponseEntity editProductDetails(@PathVariable String id, @RequestBody Product updateDetails) {
+    public ResponseEntity editProductDetails(@PathVariable String id, @RequestBody ProductDetails updateDetails) {
         Optional<Product> foundProduct = productService.getProductById(id);
         if (foundProduct.isEmpty()) {
             ErrorResponse error = ErrorResponse.builder()

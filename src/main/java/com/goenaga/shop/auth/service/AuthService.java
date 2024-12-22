@@ -24,8 +24,7 @@ public class AuthService {
     private final String TOKEN_PREFIX = "Bearer ";
 
     public ResponseEntity userSignUp(SignupRequest request) {
-        Optional<User> userRequest = userService.findUserByEmail(request.getEmail());
-        if (userRequest.isPresent()) {
+        if (userService.findUserByEmail(request.getEmail()).isPresent()) {
             ErrorResponse error = ErrorResponse.builder()
                     .message("Email already in use")
                     .build();
@@ -36,7 +35,6 @@ public class AuthService {
         TokenEntity tokenEntity = jwtService.createTokenEntity(newUser);
         newUser.setTokenEntity(tokenEntity);
         userService.save(newUser);
-        jwtService.save(tokenEntity);
 
         return ResponseEntity.ok(AuthResponse.builder()
                         .token(TOKEN_PREFIX + tokenEntity.getToken())

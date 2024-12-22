@@ -6,6 +6,7 @@ import com.goenaga.shop.user.enums.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
+import org.hibernate.annotations.UuidGenerator;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,7 +29,8 @@ import java.util.UUID;
 @Table(name = "app_user")
 public class User implements UserDetails {
     @Id
-    @Column (name = "id", nullable = false)
+    @UuidGenerator
+    @Column (name = "id", nullable = false, updatable = false)
     private UUID id;
     @Column (nullable = false)
     private String email;

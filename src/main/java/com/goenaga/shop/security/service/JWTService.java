@@ -6,7 +6,6 @@ import com.goenaga.shop.user.model.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import io.jsonwebtoken.security.SignatureException;
-import jakarta.servlet.ServletException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,12 +13,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import javax.crypto.SecretKey;
+import java.time.Instant;
 import java.util.*;
 
 
 @Service
 @RequiredArgsConstructor
 public class JWTService {
+    public void setSecretKey(String SECRET_KEY) {
+        this.SECRET_KEY = SECRET_KEY;
+    }
+
     @Value("${application.security.jwt.encryption_key}")
     private String SECRET_KEY;
     private final int TOKEN_EXPIRATION = 1000*60; // Expiration time in ms;
@@ -28,11 +32,6 @@ public class JWTService {
 
     @Transactional
     public TokenEntity createTokenEntity(User user) {
-//        Delete previous issued token to the user if it has one assigned
-        if (tokenRepository.findByUserId(user.getId()).isPresent()) {
-            tokenRepository.deleteByUserId(user.getId());
-        }
-
 //        Issue new token
         String jwtToken = issueToken(user);
         return TokenEntity.builder()
@@ -61,14 +60,14 @@ public class JWTService {
 
 //    Issue new token instance
     public String issueToken(User user) {
-        Date timestamp = new Date();
-        Date expiration = new Date(timestamp.getTime() + TOKEN_EXPIRATION);
+        Instant timestamp = Instant.now();
+        Instant expiration = timestamp.plusMillis(TOKEN_EXPIRATION);
 
         return  Jwts.builder()
                     .issuer("authService")
                     .subject(user.getEmail())
-                    .issuedAt(timestamp)
-                    .expiration(expiration)
+                    .issuedAt(Date.from(timestamp))
+                    .expiration(Date.from(expiration))
                     .signWith(getEncKey())
                     .compact();
     }
@@ -103,4 +102,6 @@ public class JWTService {
 
         return (tokenEmail.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
+
+
 }

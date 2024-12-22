@@ -42,8 +42,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
 //         Check if the header starts with "Bearer "
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
-            token = authHeader.substring(7); // Extract token
-            username = jwtService.getEmail(token); // Parse, validate and extract username from token
+            token = authHeader.substring(7); // Extract token from header
+            username = jwtService.getEmail(token); // Parse, validate and extract email from token
             User user = userService.findUserByEmail(username).get();
             String lastIssuedToken = user.getTokenEntity().getToken();
 
@@ -54,8 +54,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 //            If token expired and is the last one issued, request a refresh token
             if (jwtService.isTokenExpired(token)) {
                 token = jwtService.refreshToken(user);
-            } else {
-                throw new ServletException("Revoked access. Token not valid");
             }
         }
 
