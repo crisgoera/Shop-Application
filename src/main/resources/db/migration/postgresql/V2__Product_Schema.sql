@@ -1,7 +1,7 @@
 DROP TABLE IF EXISTS product;
 
 CREATE TABLE IF NOT EXISTS product (
-  product_id VARCHAR(255) NOT NULL,
+  product_id SMALLINT NOT NULL,
    name VARCHAR(255) NOT NULL,
    description VARCHAR(255),
    price DOUBLE PRECISION NOT NULL,
