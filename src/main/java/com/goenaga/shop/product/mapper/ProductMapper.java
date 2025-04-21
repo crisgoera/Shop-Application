@@ -18,5 +18,4 @@ public interface ProductMapper {
         }
     }
     Product updateDetailsToProduct(ProductDetails updateDetails, @MappingTarget Product product);
-
 }
