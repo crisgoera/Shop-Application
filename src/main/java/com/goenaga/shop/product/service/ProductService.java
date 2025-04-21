@@ -6,8 +6,6 @@ import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,9 +41,8 @@ public class ProductService {
         return productRepository.save(productMapper.productDetailsToProduct(updateDetails));
     }
 
-    public ResponseEntity removeProduct(Product product) {
+    public void removeProduct(Product product) {
         productRepository.delete(product);
-        return new ResponseEntity(HttpStatus.OK);
     }
 
     private double roundPrice(double price) {
