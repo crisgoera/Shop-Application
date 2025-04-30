@@ -52,6 +52,7 @@ public class User implements UserDetails {
     @Column (nullable = false)
     private Role role;
 
+    @Setter
     @OneToOne (mappedBy = "user", cascade = CascadeType.ALL)
     @PrimaryKeyJoinColumn
     private TokenEntity tokenEntity;
@@ -64,9 +65,5 @@ public class User implements UserDetails {
     @Override
     public String getUsername() {
         return email;
-    }
-
-    public void setTokenEntity(TokenEntity tokenEntity) {
-        this.tokenEntity = tokenEntity;
     }
 }
