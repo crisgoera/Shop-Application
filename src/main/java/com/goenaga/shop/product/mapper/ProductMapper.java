@@ -7,7 +7,6 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring" ,nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
 public interface ProductMapper {
-    Product productDetailsToProduct(ProductDetails productDetails);
     ProductDetails productToProductDetails(Product product);
     Product newProductRequestToProduct(NewProductRequest newProduct);
 
