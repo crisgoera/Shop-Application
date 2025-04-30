@@ -34,7 +34,7 @@ class ProductServiceTest {
     @Test
     void getProducts_ReturnsProductDetailsList() {
         final Product mockedProduct1 = Product.builder()
-                .productId(1L)
+                .productId(1)
                 .name("Test product").price(15)
                 .currency(Currency.getInstance("EUR"))
                 .build();
@@ -51,12 +51,12 @@ class ProductServiceTest {
         Assertions.assertThat(expectedList.get(0)).isInstanceOf(ProductDetails.class);
         Assertions.assertThat(expectedList.size()).isEqualTo(productList.size());
     }
-
+// TODO:
     @Test
     void createNewProduct_ReturnsProductDetailsInstanceFromNewProductRequest() {
 
     }
-
+//TODO:
     @Test
     void getProductById() {
 
@@ -70,8 +70,6 @@ class ProductServiceTest {
                 .price(23)
                 .currency(Currency.getInstance("USD"))
                 .build();
-
-
     }
 
     @Test

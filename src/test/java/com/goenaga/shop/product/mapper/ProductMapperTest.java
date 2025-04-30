@@ -5,13 +5,12 @@ import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import org.junit.jupiter.api.Test;
 import org.mapstruct.factory.Mappers;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Currency;
 
-import static junit.framework.TestCase.assertEquals;
-
 public class ProductMapperTest {
-    private ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
+    private final ProductMapper productMapper = Mappers.getMapper(ProductMapper.class);
 
     @Test
     void productDetailsToProduct_ReturnsMappedProductObject() {
@@ -23,7 +22,6 @@ public class ProductMapperTest {
                 .build();
 
         Product expectedProduct = Product.builder()
-                .productId(1L)
                 .name("Test product")
                 .description("Random desc")
                 .price(15)
@@ -32,7 +30,6 @@ public class ProductMapperTest {
 
         Product actualProduct = productMapper.productDetailsToProduct(productDetails);
 
-        assertEquals(actualProduct.getProductId(), expectedProduct.getProductId());
         assertEquals(actualProduct.getName(), expectedProduct.getName());
         assertEquals(actualProduct.getDescription(), expectedProduct.getDescription());
         assertEquals(actualProduct.getPrice(), expectedProduct.getPrice());
@@ -42,7 +39,7 @@ public class ProductMapperTest {
     @Test
     void productToProductDetails_ReturnsMappedProductDetailsObject() {
         Product product = Product.builder()
-                .productId(1L)
+                .productId(1)
                 .name("Test product")
                 .description("Random desc")
                 .price(15)
@@ -98,13 +95,13 @@ public class ProductMapperTest {
                 .build();
 
         Product product = Product.builder()
-                .productId(1L)
+                .productId(1)
                 .price(15)
                 .currency(Currency.getInstance("USD"))
                 .build();
 
         Product expectedProduct = Product.builder()
-                .productId(1L)
+                .productId(1)
                 .name("Updated product")
                 .description("Updated description")
                 .price(15)
@@ -123,7 +120,7 @@ public class ProductMapperTest {
     @Test
     void UpdateProductWithNullDetails_DoesNotMapExistingProduct() {
         Product product = Product.builder()
-                .productId(1L)
+                .productId(1)
                 .name("Test product")
                 .description("Test description")
                 .price(33)

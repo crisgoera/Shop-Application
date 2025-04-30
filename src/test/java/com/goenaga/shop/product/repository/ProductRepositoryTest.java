@@ -3,7 +3,6 @@ package com.goenaga.shop.product.repository;
 import com.goenaga.shop.product.model.Product;
 
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
@@ -41,7 +40,7 @@ class ProductRepositoryTest {
         var productList = productRepository.findAll();
 
         Assertions.assertThat(productList).isNotNull().isInstanceOf(List.class);
-        assertEquals(productList.size(), 2);
+        assertEquals(2, productList.size());
         assertEquals(productList.get(0), mockedProduct1);
         assertEquals(productList.get(1), mockedProduct2);
     }
