@@ -5,6 +5,7 @@ import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.repository.ProductRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.ArrayList;
@@ -33,15 +34,21 @@ public class ProductService {
         return productRepository.save(productMapper.newProductRequestToProduct(productRequest));
     }
 
-    public Optional<Product> getProductById(String id) {
-        return productRepository.findById(id);
+    public Product getProductById(String id) throws EntityNotFoundException{
+        Optional<Product> foundProduct = productRepository.findById(id);
+        if (foundProduct.isEmpty()) {
+            throw new EntityNotFoundException();
+        }
+        return foundProduct.get();
     }
 
-    public Product updateProduct(Product product, ProductDetails updateDetails) {
-        return productRepository.save(productMapper.productDetailsToProduct(updateDetails));
+    public Product updateProduct(String id, ProductDetails updateDetails) {
+        Product product = getProductById(id);
+        return productRepository.save(productMapper.updateDetailsToProduct(updateDetails, product));
     }
 
-    public void removeProduct(Product product) {
+    public void removeProduct(String id) {
+        Product product = getProductById(id);
         productRepository.delete(product);
     }
 
