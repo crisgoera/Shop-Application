@@ -18,6 +18,7 @@ import java.util.Currency;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +29,7 @@ class ProductServiceTest {
     @Mock
     private ProductRepository productRepository;
 
-    @Spy
+    @Mock
     private ProductMapper productMapper;
 
     @Test
@@ -48,14 +49,31 @@ class ProductServiceTest {
         List<ProductDetails> expectedList = productService.getProducts();
 
         Assertions.assertThat(expectedList).isNotNull().isInstanceOf(ArrayList.class);
-        Assertions.assertThat(expectedList.get(0)).isInstanceOf(ProductDetails.class);
+        Assertions.assertThat(expectedList.getFirst()).isInstanceOf(ProductDetails.class);
         Assertions.assertThat(expectedList.size()).isEqualTo(productList.size());
     }
-// TODO:
+
     @Test
     void createNewProduct_ReturnsProductDetailsInstanceFromNewProductRequest() {
+        Product mockedProduct = Product.builder()
+                .productId(123)
+                .price(15)
+                .currency(Currency.getInstance("USD"))
+                .description("Mocked Desc")
+                .name("Mocked product")
+                .build();
 
+
+        when(productRepository.save(any(Product.class))).thenReturn(mockedProduct);
+        when(productMapper.newProductRequestToProduct(any(NewProductRequest.class))).thenReturn(mockedProduct);
+        when(productMapper.productToProductDetails(mockedProduct)).thenReturn(ProductDetails.builder().name("Mocked product").build());
+
+        ProductDetails actualProduct = productService.createNewProduct(NewProductRequest.builder().name("Mock request").build());
+
+        Assertions.assertThat(actualProduct).isNotNull().isInstanceOf(ProductDetails.class);
+        Assertions.assertThat(actualProduct.getName()).isEqualTo(mockedProduct.getName());
     }
+
 //TODO:
     @Test
     void getProductById() {
