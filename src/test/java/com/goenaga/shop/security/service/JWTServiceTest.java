@@ -1,7 +1,6 @@
 package com.goenaga.shop.security.service;
 
 import com.goenaga.shop.security.model.TokenEntity;
-import com.goenaga.shop.security.repository.TokenRepository;
 import com.goenaga.shop.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.SignatureException;
@@ -10,7 +9,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
-import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -31,11 +29,7 @@ class JWTServiceTest {
     @Value("application.security.jwt.encryption_key")
     private String secretKey;
 
-    @Mock
-    private User user;
-
-    @Mock
-    private TokenRepository tokenRepository;
+    private final User mockUser = User.builder().email("test@gmail.com").build();
 
     @BeforeEach
     void setup() throws IOException {
@@ -51,12 +45,12 @@ class JWTServiceTest {
     void issueToken_Returns_ConstructedJWTToken() {
         assertNotNull(secretKey, "La clave secreta no fue cargada.");
 
-        Assertions.assertThat(jwtService.issueToken(user)).isNotNull();
+        Assertions.assertThat(jwtService.issueToken(mockUser)).isNotNull();
     }
 
     @Test
     void createTokenEntity_Returns_TokenEntityInstance() {
-        var tokenEntity = jwtService.createTokenEntity(user);
+        var tokenEntity = jwtService.createTokenEntity(mockUser);
 
         Assertions.assertThat(tokenEntity).isInstanceOf(TokenEntity.class);
 //        Checks jwtToken generation
@@ -65,7 +59,7 @@ class JWTServiceTest {
 
     @Test
     void refreshToken_Returns_NewTokenString() {
-        String token = jwtService.refreshToken(user);
+        String token = jwtService.refreshToken(mockUser);
 
         Assertions.assertThat(token).isNotNull();
         Assertions.assertThat(token).isInstanceOf(String.class);
@@ -73,7 +67,7 @@ class JWTServiceTest {
 
     @Test
     void parseClaims_Returns_ClaimsWithValidToken() {
-        Claims claims = jwtService.parseClaims(jwtService.issueToken(user));
+        Claims claims = jwtService.parseClaims(jwtService.issueToken(mockUser));
         Assertions.assertThat(claims).isNotNull();
         Assertions.assertThat(claims).isInstanceOf(Claims.class);
     }
@@ -110,14 +104,14 @@ class JWTServiceTest {
 
     @Test
     void getEmail_Returns_UserEmail_FromToken() {
-        String token = jwtService.issueToken(user);
+        String token = jwtService.issueToken(mockUser);
 
-        Assertions.assertThat(jwtService.getEmail(token)).isNotNull().isEqualTo(user.getEmail());
+        Assertions.assertThat(jwtService.getEmail(token)).isNotNull().isEqualTo(mockUser.getEmail());
     }
 
     @Test
     void isTokenExpired() {
-        String token = jwtService.issueToken(user);
+        String token = jwtService.issueToken(mockUser);
         String expiredToken = "eyJhbGciOiJIUzUxMiJ9.eyJpc3MiOiJhdXRoU2VydmljZSIsInN1YiI6ImFkbWluQGFkbWluLmNvbSIsImlhdCI6MTczMzk0MzE5MiwiZXhwIjoxNzMzOTQzMjUyfQ.Nmwif2zfMcyyz6ScsAqvw3BINk-CQRXeeHRnkKbXCeDIPO5H3k_r2miqhL5l4ILxegtA-h1ODyAkmD6W_-W4oQ";
 
         Assertions.assertThat(jwtService.isTokenExpired(token)).isInstanceOf(Boolean.class).isEqualTo(false);
