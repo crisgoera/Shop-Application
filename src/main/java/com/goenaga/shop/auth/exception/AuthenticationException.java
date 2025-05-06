@@ -1,4 +1,4 @@
-package com.goenaga.shop.exception.model;
+package com.goenaga.shop.auth.exception;
 
 import org.springframework.http.HttpStatus;
 
