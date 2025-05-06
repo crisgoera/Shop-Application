@@ -28,7 +28,7 @@ public class ProductMapperTest {
                 .currency(Currency.getInstance("EUR"))
                 .build();
 
-        Product actualProduct = productMapper.productDetailsToProduct(productDetails);
+        Product actualProduct = productMapper.updateDetailsToProduct(productDetails, Product.builder().build());
 
         assertEquals(actualProduct.getName(), expectedProduct.getName());
         assertEquals(actualProduct.getDescription(), expectedProduct.getDescription());

@@ -1,7 +1,6 @@
 package com.goenaga.shop.product.controller;
 
 import com.goenaga.shop.product.model.NewProductRequest;
-import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -21,22 +20,22 @@ public class ProductController {
     }
 
     @PostMapping("/new")
-    public ResponseEntity<Product> createProduct(@RequestBody NewProductRequest productRequest) {
+    public ResponseEntity<ProductDetails> createProduct(@RequestBody NewProductRequest productRequest) {
         return ResponseEntity.ok(productService.createNewProduct(productRequest));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable String id) {
+    public ResponseEntity<ProductDetails> getProductById(@PathVariable int id) {
         return ResponseEntity.ok(productService.getProductById(id));
     }
 
     @PatchMapping("/{id}/edit")
-    public ResponseEntity<?> editProductDetails(@PathVariable String id, @RequestBody ProductDetails updateDetails) {
+    public ResponseEntity<?> editProductDetails(@PathVariable int id, @RequestBody ProductDetails updateDetails) {
         return ResponseEntity.ok(productService.updateProduct(id, updateDetails));
     }
 
     @DeleteMapping("/{id}")
-    public void removeProduct(@PathVariable String id) {
+    public void removeProduct(@PathVariable int id) {
         productService.removeProduct(id);
     }
 
