@@ -2,14 +2,12 @@ package com.goenaga.shop.photo.service.impl;
 
 import com.goenaga.shop.photo.model.Photo;
 import com.goenaga.shop.photo.service.PhotoService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
 public class PhotoServiceImpl implements PhotoService {
     public List<Photo> processPhotos(String[] titles, MultipartFile[] files) throws IOException {
         if (titles == null) { return null; }
