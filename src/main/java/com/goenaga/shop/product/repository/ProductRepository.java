@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends CrudRepository<Product, String> {
+public interface ProductRepository extends CrudRepository<Product, Integer> {
     @Override
     List<Product> findAll();
 }

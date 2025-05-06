@@ -5,17 +5,18 @@ import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.repository.ProductRepository;
+import com.goenaga.shop.product.service.impl.ProductServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
+import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -24,7 +25,7 @@ import static org.mockito.Mockito.*;
 @ExtendWith(MockitoExtension.class)
 class ProductServiceTest {
     @InjectMocks
-    private ProductService productService;
+    private ProductServiceImpl productService;
 
     @Mock
     private ProductRepository productRepository;
@@ -74,12 +75,18 @@ class ProductServiceTest {
         Assertions.assertThat(actualProduct.getName()).isEqualTo(mockedProduct.getName());
     }
 
-//TODO:
+
     @Test
     void getProductById() {
+        Optional<Product> mockedProduct = Optional.of(Product.builder().name("Mocked product").build());
+        when(productRepository.findById(anyInt())).thenReturn(mockedProduct);
+        when(productMapper.productToProductDetails(any(Product.class))).thenReturn(ProductDetails.builder()
+                .name("Mocked product").build());
 
+        Assertions.assertThat(productService.getProductById(2)).isNotNull().isInstanceOf(ProductDetails.class);
     }
 
+//    TODO
     @Test
     void updateProduct_ReturnsProductWithProvidedUpdatedDetails() {
         ProductDetails updateDetails = ProductDetails.builder()
@@ -90,6 +97,7 @@ class ProductServiceTest {
                 .build();
     }
 
+//    TODO
     @Test
     void removeProduct() {
     }
