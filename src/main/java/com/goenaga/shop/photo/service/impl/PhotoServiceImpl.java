@@ -1,7 +1,7 @@
-package com.goenaga.shop.product.service.impl;
+package com.goenaga.shop.photo.service.impl;
 
-import com.goenaga.shop.product.model.Photo;
-import com.goenaga.shop.product.service.PhotoService;
+import com.goenaga.shop.photo.model.Photo;
+import com.goenaga.shop.photo.service.PhotoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;

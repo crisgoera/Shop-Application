@@ -1,8 +1,6 @@
-package com.goenaga.shop.product.model;
+package com.goenaga.shop.photo.model;
 
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.Builder;
 import lombok.Getter;
