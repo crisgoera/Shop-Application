@@ -30,8 +30,11 @@ public class ProductService {
         return productDetailsList;
     }
 
-    public Product createNewProduct(NewProductRequest productRequest) {
-        return productRepository.save(productMapper.newProductRequestToProduct(productRequest));
+    public ProductDetails createNewProduct(NewProductRequest productRequest) {
+//        Map product request to Product entity and save
+        Product newProduct = productRepository.save(productMapper.newProductRequestToProduct(productRequest));
+//        Return ProductDetails DTO
+        return productMapper.productToProductDetails(newProduct);
     }
 
     public Product getProductById(String id) throws EntityNotFoundException{
