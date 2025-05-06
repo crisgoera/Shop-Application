@@ -3,7 +3,7 @@ package com.goenaga.shop.auth.service;
 import com.goenaga.shop.auth.model.AuthResponse;
 import com.goenaga.shop.auth.model.LoginRequest;
 import com.goenaga.shop.auth.model.SignupRequest;
-import com.goenaga.shop.exception.model.AuthenticationException;
+import com.goenaga.shop.auth.exception.AuthenticationException;
 import com.goenaga.shop.security.model.TokenEntity;
 import com.goenaga.shop.security.service.JWTService;
 import com.goenaga.shop.user.model.User;
