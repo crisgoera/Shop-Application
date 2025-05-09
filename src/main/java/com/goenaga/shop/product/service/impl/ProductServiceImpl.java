@@ -1,5 +1,6 @@
 package com.goenaga.shop.product.service.impl;
 
+import com.goenaga.shop.product.exception.DuplicatedProductException;
 import com.goenaga.shop.product.mapper.ProductMapper;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
@@ -32,8 +33,12 @@ public class ProductServiceImpl implements ProductService {
     }
 
     public ProductDetails createNewProduct(NewProductRequest productRequest) {
-//        Map product request to Product entity and save
-        Product newProduct = productRepository.save(productMapper.newProductRequestToProduct(productRequest));
+        Product newProduct = productMapper.newProductRequestToProduct(productRequest);
+        boolean exists = productRepository.findByName(newProduct.getName()).isPresent();
+
+        if (exists) { throw new DuplicatedProductException(); }
+        Product saved = productRepository.save(newProduct);
+
 //        Return ProductDetails DTO
         return productMapper.productToProductDetails(newProduct);
     }
