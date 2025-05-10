@@ -31,17 +31,17 @@ public class SecurityConfig {
     @Autowired
     private AuthenticationProvider authenticationProvider;
 
-    private String[] OPEN_URL = {
+    private final String[] OPEN_URL = {
             "api/v1/auth/**",
             "api/v1/products",
             "api/v1/products/**"
     };
 
-    private String[] USER_READABLE_URL = {
+    private final String[] USER_READABLE_URL = {
             "api/v1/user/**"
     };
 
-    private String[] ADMIN_ALLOWED_URL = {
+    private final String[] ADMIN_ALLOWED_URL = {
             "api/v1/products/new"
     };
 

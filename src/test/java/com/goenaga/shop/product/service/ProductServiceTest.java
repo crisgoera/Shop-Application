@@ -1,5 +1,7 @@
 package com.goenaga.shop.product.service;
 
+import com.goenaga.shop.product.exception.DuplicatedProductException;
+import com.goenaga.shop.product.exception.ProductNotFoundException;
 import com.goenaga.shop.product.mapper.ProductMapper;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
@@ -18,6 +20,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
@@ -33,19 +36,32 @@ class ProductServiceTest {
     @Mock
     private ProductMapper productMapper;
 
+    private final Product mockedProduct = Product.builder()
+            .productId(123)
+            .price(15)
+            .currency(Currency.getInstance("USD"))
+            .description("Mocked Desc")
+            .name("Mocked product")
+            .build();
+
+    private final NewProductRequest mockedRequest = NewProductRequest.builder()
+            .name("Mocked product")
+            .build();
+
+    private final ProductDetails mockedDetails = ProductDetails.builder()
+            .price(15)
+            .currency(Currency.getInstance("USD"))
+            .description("Mocked Desc")
+            .name("Mocked product")
+            .build();
+
     @Test
     void getProducts_ReturnsProductDetailsList() {
-        final Product mockedProduct1 = Product.builder()
-                .productId(1)
-                .name("Test product").price(15)
-                .currency(Currency.getInstance("EUR"))
-                .build();
-
         List<Product> productList = new ArrayList<>();
-        productList.add(mockedProduct1);
+        productList.add(mockedProduct);
 
         Mockito.when(productRepository.findAll()).thenReturn(productList);
-        Mockito.when(productMapper.productToProductDetails(any(Product.class))).thenReturn(ProductDetails.builder().name("Test product").build());
+        Mockito.when(productMapper.productToProductDetails(any(Product.class))).thenReturn(mockedDetails);
 
         List<ProductDetails> expectedList = productService.getProducts();
 
@@ -56,45 +72,42 @@ class ProductServiceTest {
 
     @Test
     void createNewProduct_ReturnsProductDetailsInstanceFromNewProductRequest() {
-        Product mockedProduct = Product.builder()
-                .productId(123)
-                .price(15)
-                .currency(Currency.getInstance("USD"))
-                .description("Mocked Desc")
-                .name("Mocked product")
-                .build();
-
-
         when(productRepository.save(any(Product.class))).thenReturn(mockedProduct);
         when(productMapper.newProductRequestToProduct(any(NewProductRequest.class))).thenReturn(mockedProduct);
-        when(productMapper.productToProductDetails(mockedProduct)).thenReturn(ProductDetails.builder().name("Mocked product").build());
+        when(productMapper.productToProductDetails(mockedProduct)).thenReturn(mockedDetails);
 
-        ProductDetails actualProduct = productService.createNewProduct(NewProductRequest.builder().name("Mock request").build());
+        ProductDetails actualProduct = productService.createNewProduct(mockedRequest);
 
         Assertions.assertThat(actualProduct).isNotNull().isInstanceOf(ProductDetails.class);
         Assertions.assertThat(actualProduct.getName()).isEqualTo(mockedProduct.getName());
     }
 
+    @Test
+    void createNewProduct_ThrowsExceptionIfProductAlreadyExists() {
+        when(productMapper.newProductRequestToProduct(any(NewProductRequest.class))).thenReturn(mockedProduct);
+        when(productRepository.findByName(anyString())).thenReturn(Optional.of(mockedProduct));
+
+        assertThrows(DuplicatedProductException.class, () -> productService.createNewProduct(mockedRequest) );
+    }
 
     @Test
-    void getProductById() {
-        Optional<Product> mockedProduct = Optional.of(Product.builder().name("Mocked product").build());
-        when(productRepository.findById(anyInt())).thenReturn(mockedProduct);
-        when(productMapper.productToProductDetails(any(Product.class))).thenReturn(ProductDetails.builder()
-                .name("Mocked product").build());
+    void getProductById_ReturnsProductDetailsWhenProductExists() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.of(mockedProduct));
+        when(productMapper.productToProductDetails(any(Product.class))).thenReturn(mockedDetails);
 
         Assertions.assertThat(productService.getProductById(2)).isNotNull().isInstanceOf(ProductDetails.class);
+    }
+
+    @Test
+    void getProductById_ThrowsExceptionWhenProductsDoesNotExist() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, ()-> productService.getProductById(2));
     }
 
 //    TODO
     @Test
     void updateProduct_ReturnsProductWithProvidedUpdatedDetails() {
-        ProductDetails updateDetails = ProductDetails.builder()
-                .name("Updated product")
-                .description("Updated description")
-                .price(23)
-                .currency(Currency.getInstance("USD"))
-                .build();
     }
 
 //    TODO
