@@ -1,6 +1,7 @@
 package com.goenaga.shop.product.service;
 
 import com.goenaga.shop.product.exception.DuplicatedProductException;
+import com.goenaga.shop.product.exception.ProductNotFoundException;
 import com.goenaga.shop.product.mapper.ProductMapper;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
@@ -83,8 +84,6 @@ class ProductServiceTest {
 
     @Test
     void createNewProduct_ThrowsExceptionIfProductAlreadyExists() {
-        Product mockProduct = Product.builder().name("Mock request").build();
-
         when(productMapper.newProductRequestToProduct(any(NewProductRequest.class))).thenReturn(mockedProduct);
         when(productRepository.findByName(anyString())).thenReturn(Optional.of(mockedProduct));
 
@@ -92,22 +91,23 @@ class ProductServiceTest {
     }
 
     @Test
-    void getProductById() {
+    void getProductById_ReturnsProductDetailsWhenProductExists() {
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(mockedProduct));
         when(productMapper.productToProductDetails(any(Product.class))).thenReturn(mockedDetails);
 
         Assertions.assertThat(productService.getProductById(2)).isNotNull().isInstanceOf(ProductDetails.class);
     }
 
+    @Test
+    void getProductById_ThrowsExceptionWhenProductsDoesNotExist() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, ()-> productService.getProductById(2));
+    }
+
 //    TODO
     @Test
     void updateProduct_ReturnsProductWithProvidedUpdatedDetails() {
-        ProductDetails updateDetails = ProductDetails.builder()
-                .name("Updated product")
-                .description("Updated description")
-                .price(23)
-                .currency(Currency.getInstance("USD"))
-                .build();
     }
 
 //    TODO
