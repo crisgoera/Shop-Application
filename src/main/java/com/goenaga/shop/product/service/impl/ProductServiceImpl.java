@@ -1,6 +1,7 @@
 package com.goenaga.shop.product.service.impl;
 
 import com.goenaga.shop.product.exception.DuplicatedProductException;
+import com.goenaga.shop.product.exception.ProductNotFoundException;
 import com.goenaga.shop.product.mapper.ProductMapper;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.Product;
@@ -36,31 +37,49 @@ public class ProductServiceImpl implements ProductService {
         Product newProduct = productMapper.newProductRequestToProduct(productRequest);
         boolean exists = productRepository.findByName(newProduct.getName()).isPresent();
 
-        if (exists) { throw new DuplicatedProductException(); }
+        if (exists) {
+            throw new DuplicatedProductException();
+        }
+
         Product saved = productRepository.save(newProduct);
 
-//        Return ProductDetails DTO
-        return productMapper.productToProductDetails(newProduct);
+        return productMapper.productToProductDetails(saved);
     }
 
     public ProductDetails getProductById(int id) {
         Optional<Product> foundProduct = productRepository.findById(id);
-        if (foundProduct.isEmpty()) {
-            throw new EntityNotFoundException();
+
+        boolean exists = foundProduct.isPresent();
+        if (!exists) {
+            throw new ProductNotFoundException();
         }
+
         return productMapper.productToProductDetails(foundProduct.get());
     }
 
     public ProductDetails updateProduct(int id, ProductDetails updateDetails) {
         Optional<Product> foundProduct = productRepository.findById(id);
-        Product updatedProduct = productMapper.updateDetailsToProduct(updateDetails, foundProduct.get());
-        productRepository.save(updatedProduct);
 
-        return productMapper.productToProductDetails(updatedProduct);
+        boolean exists = foundProduct.isPresent();
+        if (!exists) {
+            throw new ProductNotFoundException();
+        }
+
+        Product updatedProduct = productMapper.updateDetailsToProduct(updateDetails, foundProduct.get());
+        Product saved = productRepository.save(updatedProduct);
+
+        return productMapper.productToProductDetails(saved);
     }
 
     public void removeProduct(int id) {
+        Optional<Product> foundProduct = productRepository.findById(id);
 
+        boolean exists = foundProduct.isPresent();
+        if (!exists) {
+            throw new ProductNotFoundException();
+        }
+
+        productRepository.delete(foundProduct.get());
     }
 
     private double roundPrice(double price) {
