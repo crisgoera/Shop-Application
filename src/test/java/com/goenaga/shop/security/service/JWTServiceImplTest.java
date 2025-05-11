@@ -1,6 +1,7 @@
 package com.goenaga.shop.security.service;
 
 import com.goenaga.shop.security.model.TokenEntity;
+import com.goenaga.shop.security.service.impl.JWTServiceImpl;
 import com.goenaga.shop.user.model.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.security.SignatureException;
@@ -22,9 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
 @TestPropertySource(locations = "classpath:application.properties")
 @SpringBootTest
-class JWTServiceTest {
+class JWTServiceImplTest {
     @InjectMocks
-    private JWTService jwtService;
+    private JWTServiceImpl jwtService;
 
     @Value("application.security.jwt.encryption_key")
     private String secretKey;
@@ -37,7 +38,7 @@ class JWTServiceTest {
         properties.load(getClass().getClassLoader().getResourceAsStream("application.properties"));
         String secretKey = properties.getProperty("application.security.jwt.encryption_key");
 
-        // Asigna la clave secreta al servicio
+        // Assigns secret key to service
         jwtService.setSecretKey(secretKey);
     }
 
