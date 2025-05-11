@@ -5,21 +5,19 @@ import com.goenaga.shop.security.service.JWTService;
 import com.goenaga.shop.user.enums.Role;
 import com.goenaga.shop.user.model.User;
 import com.goenaga.shop.user.repository.UserRepository;
+import com.goenaga.shop.user.service.impl.UserServiceImpl;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import java.util.Date;
-import java.util.UUID;
 
-
+//TODO:
 @ExtendWith(MockitoExtension.class)
-@DataJpaTest
-class UserServiceTest {
+class UserServiceImplTest {
     @Mock
     private UserRepository userRepository;
 
@@ -27,7 +25,7 @@ class UserServiceTest {
     private JWTService jwtService;
 
     @InjectMocks
-    private UserService userService;
+    private UserServiceImpl userService;
 
     @Test
     void userService_CreateUser_ReturnsCorrectUserInstance() {
