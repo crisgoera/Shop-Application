@@ -20,6 +20,7 @@ import java.util.Currency;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -108,10 +109,36 @@ class ProductServiceTest {
 //    TODO
     @Test
     void updateProduct_ReturnsProductWithProvidedUpdatedDetails() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.of(mockedProduct));
+        when(productMapper.updateDetailsToProduct(mockedDetails, mockedProduct)).thenReturn(mockedProduct);
+        when(productRepository.save(any(Product.class))).thenReturn(mockedProduct);
+        when(productMapper.productToProductDetails(any(Product.class))).thenReturn(mockedDetails);
+
+        Assertions.assertThat(productService.updateProduct(2, mockedDetails)).isNotNull().isInstanceOf(ProductDetails.class);
     }
 
-//    TODO
     @Test
-    void removeProduct() {
+    void updateProduct_ThrowsExceptionWhenProductDoesNotExist() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, ()-> productService.updateProduct(2, mockedDetails));
+    }
+
+    @Test
+    void removeProduct_DeletesEntryWhenExistingProductIsFound() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.of(mockedProduct));
+
+        productService.removeProduct(2);
+
+        verify(productRepository).delete(any(Product.class));
+    }
+
+    @Test
+    void removeProduct_ThrowsProductNotFoundWhenProductDoesNotExist() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, ()-> productService.removeProduct(2));
+
+        verify(productRepository, never()).delete(any());
     }
 }
