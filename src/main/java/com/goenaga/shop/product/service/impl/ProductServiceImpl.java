@@ -81,8 +81,4 @@ public class ProductServiceImpl implements ProductService {
 
         productRepository.delete(foundProduct.get());
     }
-
-    private double roundPrice(double price) {
-        return Math.round(price * 100.00)/100.00;
-    }
 }
