@@ -1,5 +1,6 @@
 package com.goenaga.shop.security.config;
 
+import com.goenaga.shop.auth.exception.InvalidCredentialsException;
 import com.goenaga.shop.security.service.JWTService;
 import com.goenaga.shop.user.model.User;
 import com.goenaga.shop.user.service.UserService;
@@ -19,6 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 @Component
 @RequiredArgsConstructor
@@ -42,7 +44,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             token = authHeader.substring(7); // Extract token from header
             username = jwtService.getEmail(token); // Parse, validate and extract email from token
-            User user = userService.findUserByEmail(username).get();
+            Optional<User> userOptional = userService.findUserByEmail(username);
+
+            if (userOptional.isEmpty()) {
+                throw new InvalidCredentialsException();
+            }
+
+            User user = userOptional.get();
             String lastIssuedToken = user.getTokenEntity().getToken();
 
             if (!Objects.equals(token, lastIssuedToken)) {

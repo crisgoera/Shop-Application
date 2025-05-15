@@ -3,6 +3,7 @@ package com.goenaga.shop.user.service.impl;
 import com.goenaga.shop.auth.model.SignupRequest;
 import com.goenaga.shop.security.service.JWTService;
 import com.goenaga.shop.user.enums.Role;
+import com.goenaga.shop.user.exception.UserNotFoundException;
 import com.goenaga.shop.user.mapper.UserMapper;
 import com.goenaga.shop.user.model.User;
 import com.goenaga.shop.user.model.UserDTO;
@@ -40,17 +41,34 @@ public class UserServiceImpl implements UserService {
 
     public void save(User user) { userRepository.save(user); }
 
-    public Optional<User> findUserByEmail(String email) { return userRepository.findUserByEmail(email); }
+    public Optional<User> findUserByEmail(String email) {
+        return userRepository.findUserByEmail(email);
+    }
 
     public UserDTO getUserFromToken(String token) {
-        User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
-        return userMapper.mapUserToDTO(user);
+        String userEmail = jwtService.getEmail(token);
+        Optional<User> foundUser = userRepository.findUserByEmail(userEmail);
+        boolean exists = foundUser.isPresent();
+
+        if (!exists) {
+            throw new UserNotFoundException();
+        }
+
+        return userMapper.mapUserToDTO(foundUser.get());
     }
 
     public UserDTO updateUserProfile(String token, UserDTO updateDetails) {
-        User user = userRepository.findUserByEmail(jwtService.getEmail(token)).get();
-        User updatedUser = userMapper.updateUserDetails(user, updateDetails);
+        String userEmail = jwtService.getEmail(token);
+        Optional<User> foundUser = userRepository.findUserByEmail(userEmail);
+        boolean exists = foundUser.isPresent();
+
+        if (!exists) {
+            throw new UserNotFoundException();
+        }
+
+        User updatedUser = userMapper.updateUserDetails(foundUser.get(), updateDetails);
         userRepository.save(updatedUser);
+
         return userMapper.mapUserToDTO(updatedUser);
     }
 }
