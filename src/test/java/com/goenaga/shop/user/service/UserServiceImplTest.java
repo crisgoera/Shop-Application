@@ -23,7 +23,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
-//TODO:
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
     @Mock
@@ -73,8 +72,26 @@ class UserServiceImplTest {
         verify(userMapper, never()).mapUserToDTO(any(User.class));
     }
 
-//    TODO: Finish the test
     @Test
-    void updateUserProfile() {
+    void updateUserProfile_SavesNewUserProfileDetails() {
+        when(jwtService.getEmail(anyString())).thenReturn("mockToken");
+        when(userService.findUserByEmail(anyString())).thenReturn(Optional.of(mockedUser));
+        when(userRepository.save(any(User.class))).thenReturn(mockedUser);
+        when(userMapper.updateUserDetails(any(User.class), any(UserDTO.class))).thenReturn(mockedUser);
+        when(userMapper.mapUserToDTO(any(User.class))).thenReturn(mockedUserDTO);
+
+        assertThat(userService.updateUserProfile("token", mockedUserDTO)).isNotNull().isInstanceOf(UserDTO.class);
+
+        verify(userRepository, times(1)).save(any(User.class));
+    }
+
+    @Test
+    void updateUserProfile_ThrowsExceptionWhenUserNotFound() {
+        when(jwtService.getEmail(anyString())).thenReturn("mockToken");
+        when(userService.findUserByEmail(anyString())).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, ()->userService.updateUserProfile("token", mockedUserDTO));
+
+        verify(userRepository, never()).save(any(User.class));
     }
 }
