@@ -1,10 +1,12 @@
 package com.goenaga.shop.product.model;
 
+import com.goenaga.shop.photo.model.Photo;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
 import java.util.Currency;
+import java.util.List;
 
 @Builder
 @Jacksonized
@@ -30,4 +32,7 @@ public class Product {
 
     @Column(nullable = false)
     private Currency currency;
+
+    @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Photo> photoList;
 }
