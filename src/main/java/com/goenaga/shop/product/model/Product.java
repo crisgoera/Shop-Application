@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
@@ -34,5 +35,5 @@ public class Product {
     private Currency currency;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Photo> photoList;
+    private List<Photo> photoList = new ArrayList<>();
 }
