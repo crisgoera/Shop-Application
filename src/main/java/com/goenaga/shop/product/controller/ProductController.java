@@ -1,11 +1,16 @@
 package com.goenaga.shop.product.controller;
 
+import com.goenaga.shop.photo.model.PhotoFile;
+import com.goenaga.shop.photo.service.UploadService;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -13,6 +18,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final UploadService uploadService;
 
     @GetMapping
     public ResponseEntity<List<ProductDetails>> getProducts() {
@@ -30,7 +36,7 @@ public class ProductController {
     }
 
     @PatchMapping("/{id}/edit")
-    public ResponseEntity<?> editProductDetails(@PathVariable int id, @RequestBody ProductDetails updateDetails) {
+    public ResponseEntity<ProductDetails> editProductDetails(@PathVariable int id, @RequestBody ProductDetails updateDetails) {
         return ResponseEntity.ok(productService.updateProduct(id, updateDetails));
     }
 
@@ -39,21 +45,9 @@ public class ProductController {
         productService.removeProduct(id);
     }
 
-//    TODO: Fix POSTMAN image upload on requests to test photo implementation
-//    @PatchMapping(path = "{id}/addphotos", consumes = { MediaType.MULTIPART_FORM_DATA_VALUE })
-//    public ResponseEntity addProductPhotos(@PathVariable String id, @RequestPart MultipartFile[] files,
-//        @RequestPart String[] titles) throws IOException {
-//        Optional<Product> foundProduct = productService.getProductById(id);
-//        if (foundProduct.isEmpty()) {
-//            ErrorResponse error = ErrorResponse.builder()
-//                    .message("Resource not found")
-//                    .build();
-//            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
-//        }
-//        Product updatedProduct = productService.addProductPhotos(foundProduct.get(), titles, files);
-//
-//        return ResponseEntity.ok(updatedProduct);
-//    }
-
-//    TODO: Remove photos from product functionality
+    @PostMapping(value = "{id}/photos/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ProductDetails> addPhotosToProduct(@PathVariable int productId,
+                                                  @RequestPart PhotoFile photoFile) throws IOException {
+        return ResponseEntity.ok(productService.addPhotoToProduct(productId, photoFile));
+    }
 }

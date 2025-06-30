@@ -140,4 +140,6 @@ class ProductServiceImplTest {
 
         verify(productRepository, never()).delete(any());
     }
+
+//    TODO: Add photo to product testing
 }

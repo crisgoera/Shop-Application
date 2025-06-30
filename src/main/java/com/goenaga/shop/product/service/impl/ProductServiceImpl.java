@@ -1,5 +1,9 @@
 package com.goenaga.shop.product.service.impl;
 
+import com.goenaga.shop.photo.model.Photo;
+import com.goenaga.shop.photo.model.PhotoFile;
+import com.goenaga.shop.photo.service.PhotoService;
+import com.goenaga.shop.photo.service.UploadService;
 import com.goenaga.shop.product.exception.DuplicatedProductException;
 import com.goenaga.shop.product.exception.ProductNotFoundException;
 import com.goenaga.shop.product.mapper.ProductMapper;
@@ -8,11 +12,13 @@ import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.repository.ProductRepository;
 import com.goenaga.shop.product.service.ProductService;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
@@ -21,6 +27,7 @@ import java.util.Optional;
 public class ProductServiceImpl implements ProductService {
     private final ProductRepository productRepository;
     private final ProductMapper productMapper;
+    private final PhotoService photoService;
 
     public List<ProductDetails> getProducts() {
         List<Product> productList = productRepository.findAll();
@@ -80,5 +87,24 @@ public class ProductServiceImpl implements ProductService {
         }
 
         productRepository.delete(foundProduct.get());
+    }
+
+    public ProductDetails addPhotoToProduct(int productId, PhotoFile file) throws IOException {
+        Optional<Product> foundProduct = productRepository.findById(productId);
+        boolean exists = foundProduct.isPresent();
+        if (!exists) {
+            throw new ProductNotFoundException();
+        }
+
+        ProductDetails updateDetails = productMapper.productToProductDetails(foundProduct.get());
+        Photo newPhoto = photoService.createPhotoEntity(photoService.uploadFile(file));
+        List<Photo> photoList = updateDetails.getPhotoList();
+        photoList.add(newPhoto);
+        updateDetails.setPhotoList(photoList);
+
+        productRepository.save(productMapper.updateDetailsToProduct(updateDetails, foundProduct.get()));
+        photoService.savePhoto(newPhoto);
+
+        return updateDetails;
     }
 }
