@@ -97,7 +97,7 @@ public class ProductServiceImpl implements ProductService {
         }
 
         ProductDetails updateDetails = productMapper.productToProductDetails(foundProduct.get());
-        Photo newPhoto = photoService.createPhotoEntity(photoService.uploadFile(file));
+        Photo newPhoto = photoService.createPhotoEntity(photoService.uploadFile(file), productId);
         List<Photo> photoList = updateDetails.getPhotoList();
         photoList.add(newPhoto);
         updateDetails.setPhotoList(photoList);

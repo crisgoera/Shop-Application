@@ -8,6 +8,6 @@ import java.util.Map;
 
 public interface PhotoService {
     Map<String, String> uploadFile(PhotoFile file) throws IOException;
-    Photo createPhotoEntity(Map<String, String> uploadResponse);
+    Photo createPhotoEntity(Map<String, String> uploadResponse, int productId);
     void savePhoto(Photo photo);
 }

@@ -28,11 +28,14 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public Photo createPhotoEntity(Map<String, String> uploadResponse) {
+    public Photo createPhotoEntity(Map<String, String> uploadResponse, int productId) {
         String photoName = uploadResponse.get("original_filename");
         String photoUrl = uploadResponse.get("url");
+        String photoId = uploadResponse.get("asset_id");
 
         return Photo.builder()
+                .photoId(photoId)
+                .productId(productId)
                 .photoName(photoName)
                 .photoUrl(photoUrl)
                 .build();
