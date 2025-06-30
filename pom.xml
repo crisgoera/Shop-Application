@@ -121,6 +121,7 @@
 		<dependency>
 			<groupId>org.flywaydb</groupId>
 			<artifactId>flyway-database-postgresql</artifactId>
+			<version>10.20.0</version>
 		</dependency>
 <!--		In memory DB for testing-->
 		<dependency>
@@ -165,7 +166,6 @@
 			<plugin>
 				<groupId>org.flywaydb</groupId>
 				<artifactId>flyway-maven-plugin</artifactId>
-				<version>6.5.7</version>
 				<configuration>
 					<configFiles>
 						<configFile>
