@@ -14,5 +14,6 @@ public class NewProductRequest {
     private String name;
     private String description;
     private double price;
+    @NonNull
     private Currency currency;
 }
