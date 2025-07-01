@@ -45,7 +45,7 @@ public class ProductController {
         productService.removeProduct(id);
     }
 
-    @PostMapping(value = "{id}/photos/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{id}/photos/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDetails> addPhotosToProduct(@PathVariable int productId,
                                                   @RequestPart PhotoFile photoFile) throws IOException {
         return ResponseEntity.ok(productService.addPhotoToProduct(productId, photoFile));
