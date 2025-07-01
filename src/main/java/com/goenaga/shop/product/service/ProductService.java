@@ -1,8 +1,10 @@
 package com.goenaga.shop.product.service;
 
+import com.goenaga.shop.photo.model.PhotoFile;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.ProductDetails;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
@@ -11,4 +13,5 @@ public interface ProductService {
     ProductDetails getProductById(int id);
     ProductDetails updateProduct(int id, ProductDetails updateDetails);
     void removeProduct(int id);
+    ProductDetails addPhotoToProduct(int id, PhotoFile file) throws IOException;
 }
