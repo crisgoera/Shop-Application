@@ -18,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final UploadService uploadService;
 
     @GetMapping
     public ResponseEntity<List<ProductDetails>> getProducts() {
