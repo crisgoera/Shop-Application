@@ -19,8 +19,8 @@ import java.util.Map;
 @RequiredArgsConstructor
 @PropertySource("classpath:cloudinary.properties")
 public class UploadServiceImpl implements UploadService {
-    private Cloudinary cloudinaryService;
-    private PhotoRepository photoRepository;
+    private final Cloudinary cloudinaryService;
+    private final PhotoRepository photoRepository;
 
     @Value("cloudinary.folder_name")
     private String folderName;
