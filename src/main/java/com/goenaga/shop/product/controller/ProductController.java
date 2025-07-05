@@ -1,7 +1,6 @@
 package com.goenaga.shop.product.controller;
 
 import com.goenaga.shop.photo.model.PhotoFile;
-import com.goenaga.shop.photo.service.UploadService;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.service.ProductService;
@@ -19,7 +18,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
-    private final UploadService uploadService;
 
     @GetMapping
     public ResponseEntity<List<ProductDetails>> getProducts() {
