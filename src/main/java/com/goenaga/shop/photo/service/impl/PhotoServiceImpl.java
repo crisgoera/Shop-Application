@@ -1,6 +1,6 @@
 package com.goenaga.shop.photo.service.impl;
 
-import com.goenaga.shop.photo.PhotoRepository;
+import com.goenaga.shop.photo.repository.PhotoRepository;
 import com.goenaga.shop.photo.model.Photo;
 import com.goenaga.shop.photo.service.PhotoService;
 import com.goenaga.shop.photo.service.UploadService;
