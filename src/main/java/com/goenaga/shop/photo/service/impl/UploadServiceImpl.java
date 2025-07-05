@@ -10,9 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
+import java.io.*;
 import java.util.Map;
+import java.util.Objects;
 
 
 @Service
@@ -20,7 +22,6 @@ import java.util.Map;
 @PropertySource("classpath:cloudinary.properties")
 public class UploadServiceImpl implements UploadService {
     private final Cloudinary cloudinaryService;
-    private final PhotoRepository photoRepository;
 
     @Value("cloudinary.folder_name")
     private String folderName;
@@ -28,10 +29,21 @@ public class UploadServiceImpl implements UploadService {
     private String pathName;
 
     @Override
-    public Map<String, String> uploadFile(PhotoFile photoFile) throws IOException {
+    public Map<String, String> uploadFile(MultipartFile multipartFile) throws IOException {
+        if (!Objects.equals(multipartFile.getContentType(), "image/jpeg")) {
+            throw new IOException("Wrong file type");
+        }
+
+//        Multipart needs to be processed into File object to be uploaded
+        File fileToUpload = new File("src/main/resources/tmp/uploadFile.tmp");
+
+        try (OutputStream os = new FileOutputStream(fileToUpload)) {
+            os.write(multipartFile.getBytes());
+        }
+
         try {
             return cloudinaryService.uploader().upload(
-                    photoFile.getFile(), ObjectUtils.asMap(folderName, pathName)
+                    fileToUpload, ObjectUtils.asMap(folderName, pathName)
             );
         } catch (IOException e) {
             throw new IOException("Failed to upload the file");

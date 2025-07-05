@@ -1,6 +1,5 @@
 package com.goenaga.shop.product.controller;
 
-import com.goenaga.shop.photo.model.PhotoFile;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.service.ProductService;
@@ -8,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -28,24 +28,24 @@ public class ProductController {
         return ResponseEntity.ok(productService.createNewProduct(productRequest));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ProductDetails> getProductById(@PathVariable int id) {
-        return ResponseEntity.ok(productService.getProductById(id));
+    @GetMapping("/{productId}")
+    public ResponseEntity<ProductDetails> getProductById(@PathVariable int productId) {
+        return ResponseEntity.ok(productService.getProductById(productId));
     }
 
-    @PatchMapping("/{id}/edit")
-    public ResponseEntity<ProductDetails> editProductDetails(@PathVariable int id, @RequestBody ProductDetails updateDetails) {
-        return ResponseEntity.ok(productService.updateProduct(id, updateDetails));
+    @PatchMapping("/{productId}/edit")
+    public ResponseEntity<ProductDetails> editProductDetails(@PathVariable int productId, @RequestBody ProductDetails updateDetails) {
+        return ResponseEntity.ok(productService.updateProduct(productId, updateDetails));
     }
 
-    @DeleteMapping("/{id}")
-    public void removeProduct(@PathVariable int id) {
-        productService.removeProduct(id);
+    @DeleteMapping("/{productId}")
+    public void removeProduct(@PathVariable int productId) {
+        productService.removeProduct(productId);
     }
 
-    @PostMapping(value = "/{id}/photos/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "/{productId}/photos/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDetails> addPhotosToProduct(@PathVariable int productId,
-                                                  @RequestPart PhotoFile photoFile) throws IOException {
-        return ResponseEntity.ok(productService.addPhotoToProduct(productId, photoFile));
+                                                  @RequestPart(value = "file") MultipartFile file) throws IOException {
+        return ResponseEntity.ok(productService.addPhotoToProduct(productId, file));
     }
 }
