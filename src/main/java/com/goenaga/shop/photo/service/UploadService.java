@@ -1,10 +1,10 @@
 package com.goenaga.shop.photo.service;
 
-import com.goenaga.shop.photo.model.PhotoFile;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
 
 public interface UploadService {
-    Map<String, String> uploadFile(PhotoFile photoFile) throws IOException;
+    Map<String, String> uploadFile(MultipartFile file) throws IOException;
 }

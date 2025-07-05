@@ -1,9 +1,7 @@
 package com.goenaga.shop.product.service.impl;
 
 import com.goenaga.shop.photo.model.Photo;
-import com.goenaga.shop.photo.model.PhotoFile;
 import com.goenaga.shop.photo.service.PhotoService;
-import com.goenaga.shop.photo.service.UploadService;
 import com.goenaga.shop.product.exception.DuplicatedProductException;
 import com.goenaga.shop.product.exception.ProductNotFoundException;
 import com.goenaga.shop.product.mapper.ProductMapper;
@@ -14,6 +12,7 @@ import com.goenaga.shop.product.repository.ProductRepository;
 import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -89,7 +88,7 @@ public class ProductServiceImpl implements ProductService {
         productRepository.delete(foundProduct.get());
     }
 
-    public ProductDetails addPhotoToProduct(int productId, PhotoFile file) throws IOException {
+    public ProductDetails addPhotoToProduct(int productId, MultipartFile file) throws IOException {
         Optional<Product> foundProduct = productRepository.findById(productId);
         boolean exists = foundProduct.isPresent();
         if (!exists) {
@@ -97,7 +96,9 @@ public class ProductServiceImpl implements ProductService {
         }
 
         ProductDetails updateDetails = productMapper.productToProductDetails(foundProduct.get());
-        Photo newPhoto = photoService.createPhotoEntity(photoService.uploadFile(file), productId);
+        Map<String, String> uploadResponse = photoService.uploadFile(file);
+
+        Photo newPhoto = photoService.createPhotoEntity(uploadResponse, productId);
         List<Photo> photoList = updateDetails.getPhotoList();
         photoList.add(newPhoto);
         updateDetails.setPhotoList(photoList);

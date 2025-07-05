@@ -2,11 +2,11 @@ package com.goenaga.shop.photo.service.impl;
 
 import com.goenaga.shop.photo.PhotoRepository;
 import com.goenaga.shop.photo.model.Photo;
-import com.goenaga.shop.photo.model.PhotoFile;
 import com.goenaga.shop.photo.service.PhotoService;
 import com.goenaga.shop.photo.service.UploadService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public Map<String, String> uploadFile(PhotoFile file) throws IOException {
+    public Map<String, String> uploadFile(MultipartFile file) throws IOException {
         return uploadService.uploadFile(file);
     }
 
