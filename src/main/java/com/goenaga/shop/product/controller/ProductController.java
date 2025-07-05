@@ -1,6 +1,5 @@
 package com.goenaga.shop.product.controller;
 
-import com.goenaga.shop.photo.model.PhotoFile;
 import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.service.ProductService;
