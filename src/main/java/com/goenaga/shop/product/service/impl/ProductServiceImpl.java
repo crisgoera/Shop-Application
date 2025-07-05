@@ -95,7 +95,7 @@ public class ProductServiceImpl implements ProductService {
             throw new ProductNotFoundException();
         }
 
-        ProductDetails updateDetails = productMapper.productToProductDetails(foundProduct.get());
+        ProductDetails updateDetails = getProductById(productId);
         Map<String, String> uploadResponse = photoService.uploadFile(file);
 
         Photo newPhoto = photoService.createPhotoEntity(uploadResponse, productId);
