@@ -1,4 +1,4 @@
-package com.goenaga.shop.photo;
+package com.goenaga.shop.photo.repository;
 
 import com.goenaga.shop.photo.model.Photo;
 import org.springframework.data.jpa.repository.JpaRepository;
