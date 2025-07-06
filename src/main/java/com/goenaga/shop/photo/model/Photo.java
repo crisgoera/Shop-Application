@@ -14,15 +14,13 @@ public class Photo {
     @Column(name="photo_id", nullable = false)
     private String photoId;
 
-    @Column(name = "product_id", nullable = false)
-    private int productId;
-
     @Column(name = "photo_name")
     private String photoName;
 
     @Column(name = "photo_url", nullable = false)
     private String photoUrl;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 }

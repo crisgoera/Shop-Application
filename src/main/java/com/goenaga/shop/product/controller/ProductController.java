@@ -4,12 +4,9 @@ import com.goenaga.shop.product.model.NewProductRequest;
 import com.goenaga.shop.product.model.ProductDetails;
 import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 @RestController
@@ -30,7 +27,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetails> getProductById(@PathVariable int productId) {
-        return ResponseEntity.ok(productService.getProductById(productId));
+        return ResponseEntity.ok(productService.getProductDetailsById(productId));
     }
 
     @PatchMapping("/{productId}/edit")
@@ -41,11 +38,5 @@ public class ProductController {
     @DeleteMapping("/{productId}")
     public void removeProduct(@PathVariable int productId) {
         productService.removeProduct(productId);
-    }
-
-    @PostMapping(value = "/{productId}/photos/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<ProductDetails> addPhotosToProduct(@PathVariable int productId,
-                                                  @RequestPart(value = "file") MultipartFile file) throws IOException {
-        return ResponseEntity.ok(productService.addPhotoToProduct(productId, file));
     }
 }

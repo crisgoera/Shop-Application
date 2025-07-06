@@ -36,5 +36,5 @@ public class Product {
     private Currency currency;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Photo> photoList = new ArrayList<>();
+    private List<Photo> photoList;
 }

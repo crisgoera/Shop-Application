@@ -1,17 +1,17 @@
 package com.goenaga.shop.product.service;
 
 import com.goenaga.shop.product.model.NewProductRequest;
+import com.goenaga.shop.product.model.Product;
 import com.goenaga.shop.product.model.ProductDetails;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
     List<ProductDetails> getProducts();
     ProductDetails createNewProduct(NewProductRequest productRequest);
-    ProductDetails getProductById(int id);
+    Product getProductEntityById(int id);
+    ProductDetails getProductDetailsById(int id);
     ProductDetails updateProduct(int id, ProductDetails updateDetails);
     void removeProduct(int id);
-    ProductDetails addPhotoToProduct(int id, MultipartFile file) throws IOException;
+    Product save(Product product);
 }
