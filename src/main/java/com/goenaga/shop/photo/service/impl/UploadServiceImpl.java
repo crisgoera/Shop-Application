@@ -2,8 +2,6 @@ package com.goenaga.shop.photo.service.impl;
 
 import com.cloudinary.Cloudinary;
 import com.cloudinary.utils.ObjectUtils;
-import com.goenaga.shop.photo.PhotoRepository;
-import com.goenaga.shop.photo.model.PhotoFile;
 import com.goenaga.shop.photo.service.UploadService;
 
 import lombok.RequiredArgsConstructor;
