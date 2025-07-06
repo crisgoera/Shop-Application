@@ -45,6 +45,8 @@ class ProductServiceImplTest {
             .build();
 
     private final NewProductRequest mockedRequest = NewProductRequest.builder()
+            .currency(Currency.getInstance("USD"))
+            .price(20)
             .name("Mocked product")
             .build();
 
@@ -91,21 +93,34 @@ class ProductServiceImplTest {
     }
 
     @Test
-    void getProductById_ReturnsProductDetailsWhenProductExists() {
+    void getProductDetailsById_ReturnsProductDetailsWhenProductExists() {
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(mockedProduct));
         when(productMapper.productToProductDetails(any(Product.class))).thenReturn(mockedDetails);
 
-        Assertions.assertThat(productService.getProductById(2)).isNotNull().isInstanceOf(ProductDetails.class);
+        Assertions.assertThat(productService.getProductDetailsById(2)).isNotNull().isInstanceOf(ProductDetails.class);
     }
 
     @Test
-    void getProductById_ThrowsExceptionWhenProductsDoesNotExist() {
+    void getProductDetailsById_ThrowsExceptionWhenProductsDoesNotExist() {
         when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
 
-        assertThrows(ProductNotFoundException.class, ()-> productService.getProductById(2));
+        assertThrows(ProductNotFoundException.class, ()-> productService.getProductDetailsById(2));
     }
 
-//    TODO
+    @Test
+    void getProductEntityById_ReturnsProductEntityWhenProductExists() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.of(mockedProduct));
+
+        Assertions.assertThat(productService.getProductEntityById(2)).isNotNull().isInstanceOf(Product.class);
+    }
+
+    @Test
+    void getProductEntityById_ThrowsExceptionWhenProductDoesNotExist() {
+        when(productRepository.findById(anyInt())).thenReturn(Optional.empty());
+
+        assertThrows(ProductNotFoundException.class, ()-> productService.getProductEntityById(2));
+    }
+
     @Test
     void updateProduct_ReturnsProductWithProvidedUpdatedDetails() {
         when(productRepository.findById(anyInt())).thenReturn(Optional.of(mockedProduct));
@@ -140,6 +155,4 @@ class ProductServiceImplTest {
 
         verify(productRepository, never()).delete(any());
     }
-
-//    TODO: Add photo to product testing
 }
