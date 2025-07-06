@@ -1,7 +1,7 @@
 package com.goenaga.shop.photo.controller;
 
+import com.goenaga.shop.photo.service.PhotoService;
 import com.goenaga.shop.product.model.ProductDetails;
-import com.goenaga.shop.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -14,11 +14,11 @@ import java.io.IOException;
 @RequestMapping("/api/v1/products")
 @RequiredArgsConstructor
 public class PhotoController {
-    private final ProductService productService;
+    private final PhotoService photoService;
 
     @PostMapping(value = "/{productId}/photos/new", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<ProductDetails> addPhotosToProduct(@PathVariable int productId,
                                                              @RequestPart(value = "file") MultipartFile file) throws IOException {
-        return ResponseEntity.ok(productService.addPhotoToProduct(productId, file));
+        return ResponseEntity.ok(photoService.addPhotoToProduct(productId, file));
     }
 }
