@@ -27,7 +27,7 @@ public class ProductController {
 
     @GetMapping("/{productId}")
     public ResponseEntity<ProductDetails> getProductById(@PathVariable int productId) {
-        return ResponseEntity.ok(productService.getProductById(productId));
+        return ResponseEntity.ok(productService.getProductDetailsById(productId));
     }
 
     @PatchMapping("/{productId}/edit")
