@@ -1,12 +1,15 @@
 package com.goenaga.shop.photo.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.goenaga.shop.product.model.Product;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.extern.jackson.Jacksonized;
 
 @Builder
 @Entity
 @Table(name = "photos")
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Photo {
@@ -22,5 +25,6 @@ public class Photo {
 
     @ManyToOne
     @JoinColumn(name = "product_id")
+    @JsonIgnore
     private Product product;
 }

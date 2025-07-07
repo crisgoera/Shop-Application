@@ -33,18 +33,20 @@ public class UploadServiceImpl implements UploadService {
         }
 
 //        Multipart needs to be processed into File object to be uploaded
-        File fileToUpload = new File("src/main/resources/tmp/uploadFile.tmp");
+        File tempFile = new File("src/main/resources/tmp/" + multipartFile.getOriginalFilename() + ".tmp");
 
-        try (OutputStream os = new FileOutputStream(fileToUpload)) {
+        try (OutputStream os = new FileOutputStream(tempFile)) {
             os.write(multipartFile.getBytes());
         }
 
         try {
             return cloudinaryService.uploader().upload(
-                    fileToUpload, ObjectUtils.asMap(folderName, pathName)
+                    tempFile, ObjectUtils.asMap(folderName, pathName)
             );
         } catch (IOException e) {
             throw new IOException("Failed to upload the file");
+        } finally {
+            tempFile.delete();
         }
     }
 }

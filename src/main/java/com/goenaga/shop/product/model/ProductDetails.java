@@ -4,16 +4,14 @@ import com.goenaga.shop.photo.model.Photo;
 import lombok.*;
 
 import java.util.Currency;
-import java.util.List;
+import java.util.Set;
 
 @Builder
-@Getter @Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class ProductDetails {
     private String name;
     private String description;
     private double price;
     private Currency currency;
-    private List<Photo> photoList;
+    private Set<Photo> photoList;
 }

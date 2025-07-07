@@ -12,8 +12,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -43,7 +43,7 @@ public class PhotoServiceImpl implements PhotoService {
 
     public ProductDetails addPhotoToProduct(int productId, MultipartFile file) throws IOException {
         Product foundProduct = productService.getProductEntityById(productId);
-        List<Photo> productPhotoList = foundProduct.getPhotoList();
+        Set<Photo> productPhotoList = foundProduct.getPhotoList();
 
         Map<String, String> uploadResponse = this.uploadFile(file);
 
