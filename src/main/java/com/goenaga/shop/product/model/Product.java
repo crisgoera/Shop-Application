@@ -5,9 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.extern.jackson.Jacksonized;
 
-import java.util.ArrayList;
 import java.util.Currency;
-import java.util.List;
+import java.util.Set;
 
 @Builder
 @Jacksonized
@@ -19,7 +18,7 @@ import java.util.List;
 @Table(name = "product")
 public class Product {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "product_id", nullable = false, updatable = false)
     private int productId;
 
@@ -36,5 +35,5 @@ public class Product {
     private Currency currency;
 
     @OneToMany(mappedBy = "product", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Photo> photoList;
+    private Set<Photo> photoList;
 }
