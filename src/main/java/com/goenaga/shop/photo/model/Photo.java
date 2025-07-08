@@ -8,10 +8,11 @@ import lombok.extern.jackson.Jacksonized;
 
 @Builder
 @Entity
-@Table(name = "photos")
-@Getter
+@Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
+@Table(name = "photos")
 public class Photo {
     @Id
     @Column(name="photo_id", nullable = false)
